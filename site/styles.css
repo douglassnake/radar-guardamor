@@ -154,3 +154,18 @@ footer { border-top: 1px solid var(--line); padding-top: 17px; color: var(--mute
   .cptec-days, .cptec-actions { grid-template-columns: 1fr; }
   .cptec-day strong { min-height: 0; }
 }
+
+/* V5: calibração persistente e climatologia oficial */
+.v5-panel { border-color: rgba(50,213,131,.22); }
+.v5-source { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; margin:2px 0 12px; padding:10px 11px; border-radius:13px; background:rgba(255,255,255,.035); border:1px solid var(--line); }
+.v5-source strong { font-size:11px; white-space:nowrap; }
+.v5-source span { color:var(--muted); font-size:10px; text-align:right; line-height:1.35; }
+.v5-idf { margin:10px 0 14px; padding:11px; border-radius:13px; background:var(--panel2); border:1px solid var(--line); }
+.v5-idf strong,.v5-idf span,.v5-idf code { display:block; }
+.v5-idf strong { font-size:12px; }
+.v5-idf span { color:var(--muted); font-size:10px; margin:3px 0 7px; }
+.v5-idf code { font-size:10px; color:#b8d7ff; overflow-wrap:anywhere; }
+.v5-kind { display:block; color:var(--muted); font-size:8px; font-weight:500; margin-top:2px; }
+.v5-panel .v4-weight-wrap { overflow-x:auto; }
+.v5-panel table { min-width:650px; }
+@media (max-width:390px) { .v5-source { display:block; } .v5-source span { text-align:left; margin-top:4px; display:block; } }

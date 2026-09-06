@@ -1,10 +1,236 @@
 {
   "version": "5.0",
-  "generated_at": null,
-  "city": {"id":"guarda-mor-mg","name":"Guarda-Mor","state":"MG","lat":-17.770833,"lon":-47.097778},
-  "observation": {"official":false,"rain":null,"time":null,"station":null,"note":"Aguardando primeira execução do coletor."},
-  "idf": {"station_code":"01747005","station_name":"Guarda-Mor","operator":"CPRM / Serviço Geológico do Brasil","operation_since":1973,"series":"1974–2018","a":778.7,"b":0.1834,"c":10.0,"d":0.7399,"equation":"i = 778.7 * T^0.1834 / (t + 10)^0.7399"},
-  "metrics": {"ECMWF":{"all":{},"official":{}},"GFS":{"all":{},"official":{}},"ICON":{"all":{},"official":{}}},
-  "weights": {"rain":{"active":false,"values":{"ECMWF":0.4,"GFS":0.3,"ICON":0.3},"reason":"coleta inicial"},"gust":{"active":false,"values":{"ECMWF":0.35,"GFS":0.3,"ICON":0.35},"reason":"coleta inicial"}},
-  "counts": {"queue":0,"verifications":0,"official_rain":0}
+  "generated_at": "2026-09-06T21:09:02.845958+00:00",
+  "city": {
+    "id": "guarda-mor-mg",
+    "name": "Guarda-Mor",
+    "state": "MG",
+    "lat": -17.770833,
+    "lon": -47.097778
+  },
+  "observation": {
+    "official": false,
+    "rain": null,
+    "time": null,
+    "station": null,
+    "note": "CEMADEN exige JWT; sem token o servidor mantém apenas referência provisória para verificação."
+  },
+  "idf": {
+    "station_code": "01747005",
+    "station_name": "Guarda-Mor",
+    "operator": "CPRM / Serviço Geológico do Brasil",
+    "lat": -17.7725,
+    "lon": -47.098611,
+    "operation_since": 1973,
+    "series": "1974–2018",
+    "a": 778.7,
+    "b": 0.1834,
+    "c": 10.0,
+    "d": 0.7399,
+    "valid_minutes": [
+      5,
+      1440
+    ],
+    "valid_return_years": [
+      2,
+      100
+    ],
+    "equation": "i = 778.7 * T^0.1834 / (t + 10)^0.7399",
+    "thresholds_1h_mm_h": {
+      "2": 38.1,
+      "5": 45.1,
+      "10": 51.2,
+      "25": 60.6,
+      "50": 68.8,
+      "100": 78.2
+    }
+  },
+  "event_definition": {
+    "rain_event_mm_h": 1.0,
+    "brier": "binário/determinístico para o mesmo limiar"
+  },
+  "metrics": {
+    "ECMWF": {
+      "all": {
+        "n": 0,
+        "rain_n": 0,
+        "gust_n": 0,
+        "mae_rain": null,
+        "rmse_rain": null,
+        "mae_gust": null,
+        "rmse_gust": null,
+        "events_n": 0,
+        "pod": null,
+        "far": null,
+        "csi": null,
+        "brier": null
+      },
+      "official": {
+        "n": 0,
+        "rain_n": 0,
+        "gust_n": 0,
+        "mae_rain": null,
+        "rmse_rain": null,
+        "mae_gust": null,
+        "rmse_gust": null,
+        "events_n": 0,
+        "pod": null,
+        "far": null,
+        "csi": null,
+        "brier": null
+      }
+    },
+    "GFS": {
+      "all": {
+        "n": 0,
+        "rain_n": 0,
+        "gust_n": 0,
+        "mae_rain": null,
+        "rmse_rain": null,
+        "mae_gust": null,
+        "rmse_gust": null,
+        "events_n": 0,
+        "pod": null,
+        "far": null,
+        "csi": null,
+        "brier": null
+      },
+      "official": {
+        "n": 0,
+        "rain_n": 0,
+        "gust_n": 0,
+        "mae_rain": null,
+        "rmse_rain": null,
+        "mae_gust": null,
+        "rmse_gust": null,
+        "events_n": 0,
+        "pod": null,
+        "far": null,
+        "csi": null,
+        "brier": null
+      }
+    },
+    "ICON": {
+      "all": {
+        "n": 0,
+        "rain_n": 0,
+        "gust_n": 0,
+        "mae_rain": null,
+        "rmse_rain": null,
+        "mae_gust": null,
+        "rmse_gust": null,
+        "events_n": 0,
+        "pod": null,
+        "far": null,
+        "csi": null,
+        "brier": null
+      },
+      "official": {
+        "n": 0,
+        "rain_n": 0,
+        "gust_n": 0,
+        "mae_rain": null,
+        "rmse_rain": null,
+        "mae_gust": null,
+        "rmse_gust": null,
+        "events_n": 0,
+        "pod": null,
+        "far": null,
+        "csi": null,
+        "brier": null
+      }
+    }
+  },
+  "weights": {
+    "rain": {
+      "active": false,
+      "values": {
+        "ECMWF": 0.4,
+        "GFS": 0.3,
+        "ICON": 0.3
+      },
+      "reason": "mínimo 20 observações oficiais por modelo"
+    },
+    "gust": {
+      "active": false,
+      "values": {
+        "ECMWF": 0.35,
+        "GFS": 0.3,
+        "ICON": 0.35
+      },
+      "reason": "mínimo 20 observações oficiais por modelo"
+    }
+  },
+  "counts": {
+    "queue": 6,
+    "verifications": 0,
+    "official_rain": 0
+  },
+  "latest_forecasts": {
+    "ECMWF": {
+      "targets": [
+        {
+          "lead": 3,
+          "target": "2026-09-06T20:00",
+          "rain": 1.7,
+          "gust": 14.0,
+          "cape": 860.0,
+          "dew": 20.8
+        },
+        {
+          "lead": 6,
+          "target": "2026-09-06T23:00",
+          "rain": 0.5,
+          "gust": 10.1,
+          "cape": 620.0,
+          "dew": 20.6
+        }
+      ]
+    },
+    "GFS": {
+      "targets": [
+        {
+          "lead": 3,
+          "target": "2026-09-06T20:00",
+          "rain": 0.0,
+          "gust": 6.5,
+          "cape": 380.0,
+          "dew": 16.5
+        },
+        {
+          "lead": 6,
+          "target": "2026-09-06T23:00",
+          "rain": 0.0,
+          "gust": 5.4,
+          "cape": 120.0,
+          "dew": 18.4
+        }
+      ]
+    },
+    "ICON": {
+      "targets": [
+        {
+          "lead": 3,
+          "target": "2026-09-06T20:00",
+          "rain": 0.4,
+          "gust": 11.5,
+          "cape": 400.0,
+          "dew": 20.4
+        },
+        {
+          "lead": 6,
+          "target": "2026-09-06T23:00",
+          "rain": 0.0,
+          "gust": 7.2,
+          "cape": 320.0,
+          "dew": 20.0
+        }
+      ]
+    }
+  },
+  "sources": {
+    "idf": "SGB/CPRM Atlas Pluviométrico – estação Guarda-Mor 01747005",
+    "official_rain_candidate": "CEMADEN PED",
+    "provisional_reference": "Open-Meteo"
+  }
 }

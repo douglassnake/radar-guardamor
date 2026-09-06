@@ -60,6 +60,8 @@
   }
   function weightsFor(city, metric, names) {
     const base = normalise(BASE_WEIGHTS[metric] || BASE_WEIGHTS.dew, names);
+    const external = window.RADAR_V5_WEIGHTS?.[city.id]?.[metric];
+    if (external?.active && external.values) return normalise(external.values, names);
     if (metric === "cape" || metric === "dew") return base;
     const skill = getSkill(city);
     if (!metricReady(skill, metric, names)) return base;

@@ -1,1 +1,71 @@
-{"queue":[],"verifications":[]}
+{
+  "queue": [
+    {
+      "key": "ECMWF|2026-09-06T18:00|3",
+      "model": "ECMWF",
+      "issued": "2026-09-06T18:00",
+      "lead": 3,
+      "target": "2026-09-06T20:00",
+      "rain": 1.7,
+      "gust": 14.0,
+      "cape": 860.0,
+      "dew": 20.8
+    },
+    {
+      "key": "ECMWF|2026-09-06T18:00|6",
+      "model": "ECMWF",
+      "issued": "2026-09-06T18:00",
+      "lead": 6,
+      "target": "2026-09-06T23:00",
+      "rain": 0.5,
+      "gust": 10.1,
+      "cape": 620.0,
+      "dew": 20.6
+    },
+    {
+      "key": "GFS|2026-09-06T18:00|3",
+      "model": "GFS",
+      "issued": "2026-09-06T18:00",
+      "lead": 3,
+      "target": "2026-09-06T20:00",
+      "rain": 0.0,
+      "gust": 6.5,
+      "cape": 380.0,
+      "dew": 16.5
+    },
+    {
+      "key": "GFS|2026-09-06T18:00|6",
+      "model": "GFS",
+      "issued": "2026-09-06T18:00",
+      "lead": 6,
+      "target": "2026-09-06T23:00",
+      "rain": 0.0,
+      "gust": 5.4,
+      "cape": 120.0,
+      "dew": 18.4
+    },
+    {
+      "key": "ICON|2026-09-06T18:00|3",
+      "model": "ICON",
+      "issued": "2026-09-06T18:00",
+      "lead": 3,
+      "target": "2026-09-06T20:00",
+      "rain": 0.4,
+      "gust": 11.5,
+      "cape": 400.0,
+      "dew": 20.4
+    },
+    {
+      "key": "ICON|2026-09-06T18:00|6",
+      "model": "ICON",
+      "issued": "2026-09-06T18:00",
+      "lead": 6,
+      "target": "2026-09-06T23:00",
+      "rain": 0.0,
+      "gust": 7.2,
+      "cape": 320.0,
+      "dew": 20.0
+    }
+  ],
+  "verifications": []
+}
