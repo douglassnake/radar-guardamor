@@ -39,6 +39,7 @@ jobs:
           test -f site/v5.js
           test -f site/visual.js
           test -f site/visual.css
+          test -f site/radarfix.css
           test -f site/data/guardamor/v5.json
           test -f scripts/collect_v5.py
           test -f scripts/install_v5.py
@@ -51,9 +52,11 @@ jobs:
           grep -q 'Análise numérica V5' site/index.html
           grep -q './visual.css' site/index.html
           grep -q './visual.js' site/index.html
-          grep -q 'radar-gm-v6-radarfix2' site/sw.js
+          grep -q './radarfix.css' site/sw.js
+          grep -q 'radar-gm-v6-radarfix3' site/sw.js
           grep -q 'rebuildRadarMap' site/visual.js
           grep -q 'startVisualRadar' site/visual.js
+          grep -q 'contain:layout paint' site/radarfix.css
       - name: Enviar site
         uses: actions/upload-pages-artifact@v3
         with:
