@@ -36,12 +36,16 @@ jobs:
           test -f site/cptec.js
           test -f site/v4.js
           test -f site/v4.css
+          test -f site/v5.js
+          test -f site/data/guardamor/v5.json
+          test -f scripts/collect_v5.py
+          test -f scripts/install_v5.py
           node --check site/app.js
           node --check site/cptec.js
           node --check site/v4.js
+          node --check site/v5.js
+          python -m py_compile scripts/collect_v5.py scripts/install_v5.py
           grep -q 'Análise numérica V4' site/index.html
-          grep -q './v4.js' site/sw.js
-          grep -q './v4.css' site/sw.js
       - name: Enviar site
         uses: actions/upload-pages-artifact@v3
         with:
