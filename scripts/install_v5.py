@@ -35,7 +35,7 @@ p.write_text(text,encoding='utf-8')
 # Atualiza shell/cache PWA preservando a camada visual V6 quando presente.
 p=Path('site/sw.js'); text=p.read_text(encoding='utf-8')
 visual = Path('site/visual.js').exists() and Path('site/visual.css').exists()
-cache_name = 'radar-gm-v6-visual' if visual else 'radar-gm-v5-calibracao'
+cache_name = 'radar-gm-v6-radarfix' if visual else 'radar-gm-v5-calibracao'
 text=re.sub(r"const CACHE = '[^']+';",f"const CACHE = '{cache_name}';",text,count=1)
 
 required = ["'./v5.js'", "'./data/guardamor/v5.json'"]
