@@ -14,6 +14,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: calibracao-v5
@@ -21,6 +23,9 @@ concurrency:
 
 jobs:
   coletar:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -51,3 +56,14 @@ jobs:
             git commit -m "data: atualiza calibracao V5"
             git push origin HEAD:main
           fi
+      - name: Configurar Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: Enviar site V5
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - name: Publicar dados V5
+        id: deployment
+        uses: actions/deploy-pages@v4
