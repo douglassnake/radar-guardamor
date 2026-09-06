@@ -32,6 +32,10 @@ jobs:
           test -f site/index.html
           test -f site/manifest.webmanifest
           test -f site/sw.js
+          test -f site/app.js
+          test -f site/cptec.js
+          node --check site/app.js
+          node --check site/cptec.js
       - name: Enviar site
         uses: actions/upload-pages-artifact@v3
         with:
