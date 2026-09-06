@@ -51,7 +51,8 @@ jobs:
           grep -q './v5.js' site/sw.js
           grep -q './visual.js' site/sw.js
           grep -q './visual.css' site/sw.js
-          grep -q 'radar-gm-v6-visual' site/sw.js
+          grep -q 'radar-gm-v6-radarfix' site/sw.js
+          grep -q 'makeRadarLayer' site/visual.js
       - name: Persistir historico e integracao
         run: |
           git config user.name "github-actions[bot]"
