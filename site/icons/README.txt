@@ -1,0 +1,1 @@
+Ícones do PWA Radar Guarda-Mor.
