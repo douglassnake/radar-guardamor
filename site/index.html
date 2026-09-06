@@ -12,6 +12,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180.png">
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
   <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./v4.css">
   <link rel="preconnect" href="https://api.open-meteo.com">
   <link rel="preconnect" href="https://geocoding-api.open-meteo.com">
   <link rel="preconnect" href="https://api.rainviewer.com">
@@ -42,15 +43,15 @@
           <button id="addCityBtn" class="square-btn" type="button" aria-label="Adicionar cidade" title="Adicionar cidade">＋</button>
         </div>
       </div>
-      <p class="city-note">Trocar a cidade recalcula os três modelos, atualiza a camada CPTEC/INPE e reposiciona o radar automaticamente.</p>
+      <p class="city-note">Trocar a cidade recalcula os três modelos, a malha espacial de 100 km, a camada CPTEC/INPE e o radar.</p>
     </section>
 
     <section class="risk-card glass" aria-live="polite">
       <div id="riskBadge" class="risk-badge level-0"><span id="riskLevel">0</span><small>/4</small></div>
       <div class="risk-copy">
-        <p class="eyebrow">RISCO PREDITIVO • 6 H</p>
+        <p class="eyebrow">RISCO NUMÉRICO V4 • 6 H</p>
         <h2 id="riskLabel">Analisando</h2>
-        <p id="riskSummary" class="risk-summary">Comparando ECMWF, GFS e ICON.</p>
+        <p id="riskSummary" class="risk-summary">Comparando modelos e malha espacial.</p>
         <div id="riskReasons" class="chips"></div>
       </div>
     </section>
@@ -84,13 +85,38 @@
     </section>
 
     <section>
-      <div class="section-title"><h2>Próximas 6 horas</h2><span class="muted">consenso dos modelos</span></div>
+      <div class="section-title"><h2>Próximas 6 horas</h2><span class="muted">consenso ponderado</span></div>
       <div class="metric-grid">
         <article class="metric glass"><span>Chuva acumulada</span><strong id="rain6">—</strong></article>
         <article class="metric glass"><span>Rajada máxima</span><strong id="gust6">—</strong></article>
         <article class="metric glass"><span>CAPE máximo</span><strong id="cape6">—</strong></article>
         <article class="metric glass"><span>Ponto de orvalho</span><strong id="dew6">—</strong></article>
       </div>
+    </section>
+
+    <section id="v4Panel" class="v4-panel glass">
+      <div class="section-title"><h2>Análise numérica V4</h2><span id="v4Status" class="muted">calculando malha…</span></div>
+      <div class="v4-index-grid">
+        <article class="v4-index"><span>Chuva</span><strong id="v4RainIndex">—</strong><small>índice 0–100</small></article>
+        <article class="v4-index"><span>Rajada</span><strong id="v4GustIndex">—</strong><small>índice 0–100</small></article>
+        <article class="v4-index"><span>Convecção</span><strong id="v4ConvIndex">—</strong><small>índice 0–100</small></article>
+        <article class="v4-index"><span>Confiança</span><strong id="v4Confidence">—</strong><small>acordo entre modelos</small></article>
+      </div>
+      <div class="v4-spatial">
+        <div class="v4-spatial-head"><strong>Setor de maior atenção</strong><span id="v4Hotspot">—</span></div>
+        <div class="v4-spatial-grid">
+          <div class="v4-mini"><span>Ameaça</span><strong id="v4HotThreat">—</strong></div>
+          <div class="v4-mini"><span>CAPE máx.</span><strong id="v4HotCape">—</strong></div>
+          <div class="v4-mini"><span>Rajada máx.</span><strong id="v4HotGust">—</strong></div>
+          <div class="v4-mini"><span>Chuva 6 h</span><strong id="v4HotRain">—</strong></div>
+        </div>
+      </div>
+      <div class="section-title"><h2 style="font-size:14px">Pesos e erro local</h2><span class="muted">MAE acumulado</span></div>
+      <div class="v4-weight-wrap">
+        <table><thead><tr><th>Modelo</th><th>Chuva</th><th>Rajada</th><th>CAPE</th><th>MAE chuva</th><th>MAE rajada</th></tr></thead><tbody id="v4WeightRows"><tr><td colspan="6">Coletando…</td></tr></tbody></table>
+      </div>
+      <p id="v4History" class="v4-history">0/20 amostras • iniciando calibração local</p>
+      <p class="v4-note">Malha: centro + 8 direções nos anéis de 15, 30, 60 e 100 km. Os anéis externos recebem peso menor. O autoajuste de chuva/rajada só começa após 20 verificações por modelo; até lá são usados pesos iniciais transparentes. A referência horária de verificação é assimilada/modelada, não substitui pluviômetro ou estação meteorológica local.</p>
     </section>
 
     <section>
@@ -105,7 +131,7 @@
         <button id="overviewFavBtn" class="pill-btn" type="button">★ Favoritas</button>
       </div>
       <div id="cityOverview" class="city-overview" aria-live="polite"></div>
-      <p class="source-note overview-note">A visão rápida usa a previsão combinada do Open-Meteo para triagem. Ao abrir uma cidade, o painel principal recalcula ECMWF, GFS e ICON separadamente e atualiza a camada CPTEC/INPE.</p>
+      <p class="source-note overview-note">A visão rápida usa a previsão combinada do Open-Meteo para triagem. Ao abrir uma cidade, o painel principal recalcula ECMWF, GFS e ICON separadamente, executa a malha V4 e atualiza a camada CPTEC/INPE.</p>
     </section>
 
     <section>
@@ -132,7 +158,7 @@
     </section>
 
     <section>
-      <div class="section-title"><h2>Próximas horas</h2><span class="muted">consenso até 12 h</span></div>
+      <div class="section-title"><h2>Próximas horas</h2><span class="muted">consenso ponderado até 12 h</span></div>
       <div class="table-wrap glass">
         <table><thead><tr><th>Hora</th><th>Chuva</th><th>Rajada</th><th>CAPE</th></tr></thead><tbody id="hourlyRows"></tbody></table>
       </div>
@@ -161,14 +187,16 @@
     </dialog>
 
     <dialog id="riskDialog">
-      <h2>Índice meteorológico 0–4</h2>
-      <p>O nível combina consenso entre modelos, CAPE, chuva prevista, rajadas e umidade. Radar/nowcasting CPTEC/INPE é uma camada de validação separada e avisos oficiais sempre prevalecem.</p>
-      <ul><li><strong>0 Normal:</strong> sem sinal relevante.</li><li><strong>1 Atenção:</strong> ambiente ficando favorável.</li><li><strong>2 Alerta:</strong> instabilidade/chuva/rajadas relevantes.</li><li><strong>3 Perigo:</strong> combinação forte de sinais.</li><li><strong>4 Severo:</strong> cenário extremo no consenso dos modelos.</li></ul>
+      <h2>Índice meteorológico V4</h2>
+      <p>O nível 0–4 deriva de três índices contínuos de 0–100: chuva, rajada e convecção. O consenso central é ponderado entre ECMWF, GFS e ICON e combinado com uma malha de 33 pontos até 100 km, com penalização por distância.</p>
+      <p>Os pesos de chuva e rajada começam em valores iniciais fixos e só passam a se autoajustar após 20 verificações locais por modelo. A confiança diminui quando há grande divergência entre os modelos.</p>
+      <ul><li><strong>0 Normal:</strong> índice &lt; 20.</li><li><strong>1 Atenção:</strong> 20–39.</li><li><strong>2 Alerta:</strong> 40–59.</li><li><strong>3 Perigo:</strong> 60–79.</li><li><strong>4 Severo:</strong> 80–100.</li></ul>
+      <p>Radar/nowcasting CPTEC/INPE continua como camada de validação separada e avisos oficiais sempre prevalecem.</p>
       <button data-close="riskDialog" class="primary-btn" type="button">Fechar</button>
     </dialog>
 
     <footer>
-      <p>Radar Guarda-Mor • monitor meteorológico multi-cidade • PWA experimental</p>
+      <p>Radar Guarda-Mor • monitor meteorológico multi-cidade • motor numérico V4</p>
       <p>Observação/nowcasting: CPTEC/INPE SIGMA + FORTRACC. Previsão: Open-Meteo / ECMWF / NOAA-GFS / DWD-ICON. Mapa rápido: RainViewer. Base cartográfica: OpenStreetMap.</p>
       <p>Em emergência: Defesa Civil 199 • Bombeiros 193.</p>
     </footer>
@@ -177,5 +205,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="./app.js"></script>
   <script src="./cptec.js"></script>
+  <script src="./v4.js"></script>
 </body>
 </html>
