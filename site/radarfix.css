@@ -1,0 +1,99 @@
+/* Radar fix V6.3 — isolamento rígido do Leaflet no iPhone/Safari */
+.visual-v6 .radar-card{
+  position:relative!important;
+  overflow:hidden!important;
+  isolation:isolate!important;
+  contain:layout paint!important;
+}
+
+.visual-v6 #map,
+.visual-v6 #map.leaflet-container{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  height:300px!important;
+  min-height:300px!important;
+  overflow:hidden!important;
+  contain:layout paint size!important;
+  clip-path:inset(0)!important;
+  -webkit-clip-path:inset(0)!important;
+  isolation:isolate!important;
+  z-index:1!important;
+  background:#142237!important;
+  transform:translateZ(0);
+  -webkit-transform:translateZ(0);
+}
+
+@media(min-width:521px){
+  .visual-v6 #map,
+  .visual-v6 #map.leaflet-container{height:345px!important;min-height:345px!important;}
+}
+
+.visual-v6 #map .leaflet-map-pane,
+.visual-v6 #map .leaflet-pane,
+.visual-v6 #map .leaflet-tile-pane,
+.visual-v6 #map .leaflet-overlay-pane,
+.visual-v6 #map .leaflet-shadow-pane,
+.visual-v6 #map .leaflet-marker-pane,
+.visual-v6 #map .leaflet-tooltip-pane,
+.visual-v6 #map .leaflet-popup-pane{
+  max-width:none!important;
+}
+
+.visual-v6 #map .leaflet-tile-container,
+.visual-v6 #map .leaflet-tile{
+  pointer-events:none!important;
+}
+
+.visual-v6 #map .leaflet-control-container{
+  position:relative!important;
+  z-index:800!important;
+}
+
+.visual-v6 .radar-timeline-labels,
+.visual-v6 .radar-slider,
+.visual-v6 .radar-controls,
+.visual-v6 .radar-card>.source-note{
+  position:relative!important;
+  z-index:50!important;
+}
+
+.visual-v6 .radar-timeline-labels{
+  background:#061b2e!important;
+  padding-top:11px!important;
+}
+
+.visual-v6 .radar-slider{
+  background:#061b2e!important;
+  margin-top:0!important;
+  margin-bottom:0!important;
+  padding:8px 12px!important;
+  width:100%!important;
+  height:30px!important;
+}
+
+.visual-v6 .radar-controls{
+  background:#061b2e!important;
+  min-height:62px!important;
+  overflow:visible!important;
+}
+
+.visual-v6 .radar-card>.source-note{
+  background:#061b2e!important;
+  padding-top:6px!important;
+}
+
+.visual-v6 .radar-controls button,
+.visual-v6 .radar-controls select,
+.visual-v6 .radar-controls label{
+  position:relative!important;
+  z-index:60!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+}
+
+.visual-v6 #radarPlay{
+  min-width:96px!important;
+  cursor:pointer!important;
+}
