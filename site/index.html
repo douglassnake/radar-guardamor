@@ -112,11 +112,20 @@
       <div class="section-title"><h2>Radar observado</h2><span id="radarTime" class="muted">última imagem</span></div>
       <div class="radar-card glass">
         <div id="map" aria-label="Mapa de radar meteorológico"></div>
+        <div class="radar-timeline-labels"><span id="radarStart">—</span><span id="radarEnd">mais recente</span></div>
+        <input id="radarSlider" class="radar-slider" aria-label="Linha do tempo do radar" type="range" min="0" max="0" value="0">
         <div class="radar-controls">
-          <button id="radarPrev" class="small-btn" type="button">◀</button>
-          <button id="radarPlay" class="small-btn" type="button">▶ Animar</button>
-          <button id="radarNext" class="small-btn" type="button">▶</button>
-          <input id="radarSlider" aria-label="Linha do tempo do radar" type="range" min="0" max="0" value="0">
+          <button id="radarPrev" class="small-btn" type="button" aria-label="Quadro anterior">◀</button>
+          <button id="radarPlay" class="small-btn radar-play" type="button">▶ Animar</button>
+          <button id="radarNext" class="small-btn" type="button" aria-label="Próximo quadro">▶</button>
+          <label class="radar-speed">Velocidade
+            <select id="radarSpeed" aria-label="Velocidade da animação">
+              <option value="1300">0,5×</option>
+              <option value="850" selected>1×</option>
+              <option value="550">1,5×</option>
+              <option value="350">2×</option>
+            </select>
+          </label>
         </div>
         <p class="source-note">Mapa rápido: RainViewer + OpenStreetMap. Para validação oficial e nowcasting, use Radar SIGMA e FORTRACC na seção CPTEC/INPE acima.</p>
       </div>
