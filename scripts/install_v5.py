@@ -19,7 +19,6 @@ text=text.replace('motor numérico V4','motor numérico V5')
 text=text.replace('<h2>Índice meteorológico V4</h2>','<h2>Índice meteorológico V5</h2>')
 base_note='Radar/nowcasting CPTEC/INPE continua como camada de validação separada e avisos oficiais sempre prevalecem.'
 v5_note='A V5 acrescenta climatologia IDF oficial e skill persistente no servidor. Pesos externos só entram no índice quando houver observações oficiais suficientes.'
-# Limpa eventual repetição criada por versões anteriores.
 while f'{v5_note} {v5_note}' in text:
     text=text.replace(f'{v5_note} {v5_note}',v5_note)
 if f'{v5_note} {base_note}' not in text:
@@ -33,18 +32,23 @@ if '/* V5: calibração persistente' not in text:
     text += css
 p.write_text(text,encoding='utf-8')
 
-# Atualiza shell/cache PWA independentemente da ordem atual dos arquivos.
+# Atualiza shell/cache PWA preservando a camada visual V6 quando presente.
 p=Path('site/sw.js'); text=p.read_text(encoding='utf-8')
-text=re.sub(r"const CACHE = '[^']+';","const CACHE = 'radar-gm-v5-calibracao';",text,count=1)
-if "'./v5.js'" not in text:
-    if "'./v4.js', './manifest.webmanifest'" in text:
-        text=text.replace("'./v4.js', './manifest.webmanifest'","'./v4.js', './v5.js', './data/guardamor/v5.json', './manifest.webmanifest'",1)
-    elif "'./manifest.webmanifest'" in text:
-        text=text.replace("'./manifest.webmanifest'","'./v5.js', './data/guardamor/v5.json', './manifest.webmanifest'",1)
-    else:
+visual = Path('site/visual.js').exists() and Path('site/visual.css').exists()
+cache_name = 'radar-gm-v6-visual' if visual else 'radar-gm-v5-calibracao'
+text=re.sub(r"const CACHE = '[^']+';",f"const CACHE = '{cache_name}';",text,count=1)
+
+required = ["'./v5.js'", "'./data/guardamor/v5.json'"]
+if visual:
+    required += ["'./visual.css'", "'./visual.js'"]
+
+for item in required:
+    if item in text:
+        continue
+    if "'./manifest.webmanifest'" not in text:
         raise SystemExit('Lista SHELL não reconhecida em sw.js')
-elif "'./data/guardamor/v5.json'" not in text:
-    text=text.replace("'./v5.js'","'./v5.js', './data/guardamor/v5.json'",1)
+    text=text.replace("'./manifest.webmanifest'",f"{item}, './manifest.webmanifest'",1)
+
 p.write_text(text,encoding='utf-8')
 
-print('V5 instalado/atualizado com sucesso')
+print(f'V5 instalado/atualizado com sucesso • cache {cache_name}')
