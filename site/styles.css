@@ -109,6 +109,29 @@ dialog .primary-btn:not(.compact), .dialog-close { width: 100%; }
 .search-result span { display: block; color: var(--muted); font-size: 10px; margin-top: 2px; }
 footer { border-top: 1px solid var(--line); padding-top: 17px; color: var(--muted); font-size: 10px; line-height: 1.45; }
 .leaflet-control-attribution { font-size: 8px !important; }
+
+.cptec-panel { border-radius: 20px; padding: 14px 14px 12px; border-color: rgba(88,166,255,.22); }
+.cptec-status { white-space: nowrap; }
+.cptec-status[data-mode="ok"] { color: #8df1ba; }
+.cptec-status[data-mode="fallback"] { color: #ffe096; }
+.cptec-kicker { color: #8fb7e8; font-size: 10px; font-weight: 800; letter-spacing: .9px; margin: 1px 0 9px; }
+.cptec-loading { color: var(--muted); font-size: 12px; padding: 6px 0 10px; }
+.cptec-days { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 7px; }
+.cptec-day { min-width: 0; background: var(--panel2); border: 1px solid var(--line); border-radius: 13px; padding: 10px; }
+.cptec-day span, .cptec-day small { display: block; color: var(--muted); font-size: 9px; }
+.cptec-day strong { display: block; font-size: 11px; line-height: 1.25; margin: 5px 0 7px; min-height: 28px; }
+.cptec-update { color: var(--muted); font-size: 10px; line-height: 1.4; margin: 9px 1px 0; }
+.cptec-fallback { border: 1px solid rgba(245,196,81,.22); background: rgba(245,196,81,.06); border-radius: 13px; padding: 11px; }
+.cptec-fallback strong, .cptec-fallback span { display: block; }
+.cptec-fallback strong { font-size: 12px; }
+.cptec-fallback span { color: var(--muted); font-size: 10px; line-height: 1.4; margin-top: 3px; }
+.cptec-actions { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 7px; margin-top: 10px; }
+.cptec-link { min-width: 0; border: 1px solid rgba(88,166,255,.24); background: rgba(88,166,255,.08); border-radius: 13px; padding: 10px; color: white; text-decoration: none; }
+.cptec-link strong, .cptec-link span { display: block; }
+.cptec-link strong { font-size: 11px; }
+.cptec-link span { color: #9fb6d1; font-size: 9px; line-height: 1.25; margin-top: 3px; }
+.cptec-note { padding: 10px 1px 0; }
+
 @media (min-width: 600px) {
   .metric-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
   .city-overview { grid-template-columns: repeat(4, minmax(0,1fr)); }
@@ -124,4 +147,6 @@ footer { border-top: 1px solid var(--line); padding-top: 17px; color: var(--mute
   .model-card { gap: 7px; padding: 11px; }
   .official-card { align-items: flex-start; }
   .city-card { padding: 10px; }
+  .cptec-days, .cptec-actions { grid-template-columns: 1fr; }
+  .cptec-day strong { min-height: 0; }
 }
