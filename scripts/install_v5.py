@@ -11,13 +11,19 @@ if extra not in text:
     text=text.replace(marker,marker+extra,1)
 p.write_text(text,encoding='utf-8')
 
-# Carrega o módulo V5 depois do V4.
+# Carrega o módulo V5 depois do V4 e mantém a explicação idempotente.
 p=Path('site/index.html'); text=p.read_text(encoding='utf-8')
 if '<script src="./v5.js"></script>' not in text:
     text=text.replace('  <script src="./v4.js"></script>','  <script src="./v4.js"></script>\n  <script src="./v5.js"></script>',1)
 text=text.replace('motor numérico V4','motor numérico V5')
 text=text.replace('<h2>Índice meteorológico V4</h2>','<h2>Índice meteorológico V5</h2>')
-text=text.replace('Radar/nowcasting CPTEC/INPE continua como camada de validação separada e avisos oficiais sempre prevalecem.','A V5 acrescenta climatologia IDF oficial e skill persistente no servidor. Pesos externos só entram no índice quando houver observações oficiais suficientes. Radar/nowcasting CPTEC/INPE continua como camada de validação separada e avisos oficiais sempre prevalecem.')
+base_note='Radar/nowcasting CPTEC/INPE continua como camada de validação separada e avisos oficiais sempre prevalecem.'
+v5_note='A V5 acrescenta climatologia IDF oficial e skill persistente no servidor. Pesos externos só entram no índice quando houver observações oficiais suficientes.'
+# Limpa eventual repetição criada por versões anteriores.
+while f'{v5_note} {v5_note}' in text:
+    text=text.replace(f'{v5_note} {v5_note}',v5_note)
+if f'{v5_note} {base_note}' not in text:
+    text=text.replace(base_note,f'{v5_note} {base_note}',1)
 p.write_text(text,encoding='utf-8')
 
 # Estilos V5.
