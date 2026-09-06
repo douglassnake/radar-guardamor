@@ -34,7 +34,7 @@ const weatherLabels = {
   95:"Tempestade",96:"Tempestade c/ granizo",99:"Tempestade forte c/ granizo"
 };
 
-let map, cityMarker, radarLayer, radarFrames = [], radarIndex = 0, radarTimer = null;
+let map, cityMarker, radarLayers = [], radarFrames = [], radarIndex = 0, radarTimer = null, radarDelay = 850;
 let lastData = null;
 let loadToken = 0;
 let overviewMode = "all";
@@ -371,30 +371,101 @@ function initMap() {
   cityMarker = L.circleMarker([currentCity.lat,currentCity.lon], {radius:7,weight:2,color:"#ffffff",fillColor:"#1977e9",fillOpacity:1}).addTo(map).bindTooltip(currentCity.name);
   loadRadar();
 }
+function stopRadarPlay() {
+  if (radarTimer) clearTimeout(radarTimer);
+  radarTimer = null;
+  $("radarPlay").textContent = "▶ Animar";
+}
+
+function clearRadarLayers() {
+  radarLayers.forEach(layer => map.removeLayer(layer));
+  radarLayers = [];
+}
+
+function buildRadarLayers() {
+  clearRadarLayers();
+  radarLayers = radarFrames.map((f) => {
+    const layer = L.tileLayer(`${f.host}${f.path}/256/{z}/{x}/{y}/2/1_0.png`, {
+      tileSize: 256,
+      opacity: 0,
+      zIndex: 5,
+      maxNativeZoom: 7,
+      maxZoom: 7,
+      keepBuffer: 3,
+      updateWhenIdle: false,
+      updateWhenZooming: false,
+      attribution: "RainViewer"
+    }).addTo(map);
+    return layer;
+  });
+}
+
 async function loadRadar() {
   if (!map) return;
+  stopRadarPlay();
+  $("radarTime").textContent = "atualizando radar…";
   try {
     const j = await fetchJSON("https://api.rainviewer.com/public/weather-maps.json", 10000);
     radarFrames = (j.radar?.past || []).map(f => ({...f,host:j.host}));
-    radarIndex = Math.max(0,radarFrames.length-1);
-    $("radarSlider").max = Math.max(0,radarFrames.length-1);
+    if (!radarFrames.length) throw new Error("Sem quadros de radar");
+    buildRadarLayers();
+    radarIndex = radarFrames.length - 1;
+    $("radarSlider").max = radarFrames.length - 1;
     $("radarSlider").value = radarIndex;
-    showRadarFrame(radarIndex);
-  } catch (e) { console.warn("Radar",e); $("radarTime").textContent = "radar temporariamente indisponível"; }
+    if ($("radarStart")) $("radarStart").textContent = new Date(radarFrames[0].time*1000).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+    if ($("radarEnd")) $("radarEnd").textContent = new Date(radarFrames.at(-1).time*1000).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) + " · mais recente";
+    showRadarFrame(radarIndex, true);
+
+    // Pré-carrega visualmente os quadros adjacentes com opacidade imperceptível.
+    const warm = [radarIndex - 1, radarIndex - 2, 0].filter(i => i >= 0 && radarLayers[i]);
+    warm.forEach((i, n) => setTimeout(() => {
+      radarLayers[i].setOpacity(0.01);
+      setTimeout(() => radarLayers[i].setOpacity(0), 450);
+    }, 250 + n * 180));
+  } catch (e) {
+    console.warn("Radar",e);
+    $("radarTime").textContent = "radar temporariamente indisponível";
+  }
 }
-function showRadarFrame(i) {
+
+function showRadarFrame(i, keepPlaying = false) {
   if (!radarFrames.length || !map) return;
-  radarIndex = Math.max(0,Math.min(i,radarFrames.length-1));
+  radarIndex = Math.max(0, Math.min(i, radarFrames.length - 1));
+
+  radarLayers.forEach((layer, idx) => {
+    layer.setOpacity(idx === radarIndex ? .72 : 0);
+  });
+
   const f = radarFrames[radarIndex];
-  if (radarLayer) map.removeLayer(radarLayer);
-  radarLayer = L.tileLayer(`${f.host}${f.path}/256/{z}/{x}/{y}/2/1_0.png`, {tileSize:256,opacity:.72,zIndex:5,maxZoom:7,attribution:"RainViewer"}).addTo(map);
   $("radarSlider").value = radarIndex;
-  $("radarTime").textContent = new Date(f.time*1000).toLocaleString("pt-BR", {hour:"2-digit",minute:"2-digit",day:"2-digit",month:"2-digit"});
+  const stamp = new Date(f.time*1000).toLocaleString("pt-BR", {
+    hour:"2-digit", minute:"2-digit", day:"2-digit", month:"2-digit"
+  });
+  $("radarTime").textContent = radarIndex === radarFrames.length - 1 ? stamp + " · mais recente" : stamp;
+  if (!keepPlaying) stopRadarPlay();
 }
+
+function scheduleRadarFrame() {
+  if (!radarTimer) return;
+  const atEnd = radarIndex >= radarFrames.length - 1;
+  const wait = atEnd ? Math.max(1500, radarDelay * 1.8) : radarDelay;
+  radarTimer = setTimeout(() => {
+    showRadarFrame(atEnd ? 0 : radarIndex + 1, true);
+    scheduleRadarFrame();
+  }, wait);
+}
+
 function toggleRadarPlay() {
-  if (radarTimer) { clearInterval(radarTimer); radarTimer=null; $("radarPlay").textContent="▶ Animar"; return; }
-  $("radarPlay").textContent="⏸ Pausar";
-  radarTimer=setInterval(()=>showRadarFrame(radarIndex>=radarFrames.length-1?0:radarIndex+1),700);
+  if (radarTimer) {
+    stopRadarPlay();
+    return;
+  }
+  if (radarFrames.length < 2) return;
+  $("radarPlay").textContent = "⏸ Pausar";
+  radarTimer = setTimeout(() => {
+    showRadarFrame(radarIndex >= radarFrames.length - 1 ? 0 : radarIndex + 1, true);
+    scheduleRadarFrame();
+  }, radarDelay);
 }
 function setOverviewMode(mode) {
   overviewMode = mode;
@@ -414,7 +485,7 @@ $("overviewFavBtn").addEventListener("click", () => setOverviewMode("favorites")
 $("radarPrev").addEventListener("click", () => showRadarFrame(radarIndex-1));
 $("radarNext").addEventListener("click", () => showRadarFrame(radarIndex+1));
 $("radarPlay").addEventListener("click", toggleRadarPlay);
-$("radarSlider").addEventListener("input", e => showRadarFrame(Number(e.target.value)));
+$("radarSlider").addEventListener("input", e => showRadarFrame(Number(e.target.value)));\n$("radarSpeed")?.addEventListener("change", e => { radarDelay = Number(e.target.value); if (radarTimer) { stopRadarPlay(); toggleRadarPlay(); } });
 $("installHelp").addEventListener("click", () => $("installDialog").showModal());
 $("aboutRisk").addEventListener("click", () => $("riskDialog").showModal());
 document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", () => $(b.dataset.close).close()));

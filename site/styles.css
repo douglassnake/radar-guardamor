@@ -83,9 +83,13 @@ section { margin-bottom: 24px; }
 .overview-note { padding: 8px 2px 0 !important; }
 .radar-card { border-radius: 20px; overflow: hidden; }
 #map { height: 330px; background: #152033; }
-.radar-controls { padding: 10px; display: grid; grid-template-columns: auto auto auto 1fr; gap: 8px; align-items: center; }
-.small-btn { border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,.06); color: white; min-height: 36px; padding: 0 11px; }
-#radarSlider { width: 100%; }
+.radar-timeline-labels { display:flex; justify-content:space-between; gap:10px; padding:10px 12px 2px; color:var(--muted); font-size:10px; }
+.radar-slider { display:block; width:calc(100% - 24px); margin:2px 12px 5px; accent-color:var(--blue); }
+.radar-controls { padding: 8px 10px 11px; display: grid; grid-template-columns: 42px auto 42px 1fr; gap: 8px; align-items: center; }
+.small-btn { border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,.06); color: white; min-height: 40px; padding: 0 11px; }
+.radar-play { min-width:92px; background:rgba(88,166,255,.13); border-color:rgba(88,166,255,.35); }
+.radar-speed { justify-self:end; display:flex; align-items:center; gap:6px; color:var(--muted); font-size:10px; }
+.radar-speed select { color:white; background:#0c1727; border:1px solid var(--line); border-radius:9px; padding:7px 6px; }
 .source-note { color: var(--muted); font-size: 10px; padding: 0 12px 12px; margin: 0; line-height: 1.4; }
 .table-wrap { border-radius: 18px; overflow: hidden; }
 table { width: 100%; border-collapse: collapse; font-size: 12px; }
