@@ -54,16 +54,6 @@ jobs:
           text = text.replace('radar-gm-v3-cptec', 'radar-gm-v3-cptec-hotfix')
           text = text.replace('radar-gm-v2-multicity', 'radar-gm-v3-cptec-hotfix')
           sw.write_text(text, encoding='utf-8')
-
-          pages = Path('.github/workflows/pages.yml')
-          text = pages.read_text(encoding='utf-8')
-          marker = '          test -f site/sw.js\n'
-          extra = '          test -f site/app.js\n          test -f site/cptec.js\n          node --check site/app.js\n          node --check site/cptec.js\n'
-          if 'node --check site/app.js' not in text:
-              if marker not in text:
-                  raise SystemExit('Bloco de validacao nao encontrado em pages.yml')
-              text = text.replace(marker, marker + extra, 1)
-          pages.write_text(text, encoding='utf-8')
           PY
 
       - name: Validar aplicativo
@@ -79,15 +69,12 @@ jobs:
           grep -q 'FORTRACC' site/index.html
           grep -q './cptec.js' site/sw.js
 
-      - name: Remover workflow temporario
-        run: rm .github/workflows/hotfix-validacao.yml
-
       - name: Registrar correcao no main
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add site/app.js site/index.html site/cptec.js site/sw.js .github/workflows/pages.yml .github/workflows/hotfix-validacao.yml
-          git commit -m "fix: valida JavaScript e esclarece camada CPTEC"
+          git add site/app.js site/index.html site/cptec.js site/sw.js
+          git commit -m "fix: corrige JS e esclarece camada CPTEC"
           git push origin HEAD:main
 
       - name: Configurar Pages
