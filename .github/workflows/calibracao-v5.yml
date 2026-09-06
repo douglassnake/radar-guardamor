@@ -12,6 +12,7 @@ on:
       - 'site/v5.js'
       - 'site/visual.js'
       - 'site/visual.css'
+      - 'site/radarfix.css'
       - '.github/workflows/calibracao-v5.yml'
 
 permissions:
@@ -42,6 +43,7 @@ jobs:
         run: python scripts/collect_v5.py
       - name: Validar site V5/V6
         run: |
+          test -f site/radarfix.css
           node --check site/v4.js
           node --check site/v5.js
           node --check site/visual.js
@@ -51,14 +53,16 @@ jobs:
           grep -q './v5.js' site/sw.js
           grep -q './visual.js' site/sw.js
           grep -q './visual.css' site/sw.js
-          grep -q 'radar-gm-v6-radarfix2' site/sw.js
+          grep -q './radarfix.css' site/sw.js
+          grep -q 'radar-gm-v6-radarfix3' site/sw.js
           grep -q 'rebuildRadarMap' site/visual.js
           grep -q 'startVisualRadar' site/visual.js
+          grep -q 'contain:layout paint' site/radarfix.css
       - name: Persistir historico e integracao
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/v5_state.json site/data/guardamor/v5.json site/index.html site/styles.css site/sw.js site/v4.js site/visual.js site/visual.css
+          git add data/v5_state.json site/data/guardamor/v5.json site/index.html site/styles.css site/sw.js site/v4.js site/visual.js site/visual.css site/radarfix.css
           if git diff --cached --quiet; then
             echo "Sem alteracoes"
           else
