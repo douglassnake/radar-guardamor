@@ -1,0 +1,10 @@
+{
+  "version": "5.0",
+  "generated_at": null,
+  "city": {"id":"guarda-mor-mg","name":"Guarda-Mor","state":"MG","lat":-17.770833,"lon":-47.097778},
+  "observation": {"official":false,"rain":null,"time":null,"station":null,"note":"Aguardando primeira execução do coletor."},
+  "idf": {"station_code":"01747005","station_name":"Guarda-Mor","operator":"CPRM / Serviço Geológico do Brasil","operation_since":1973,"series":"1974–2018","a":778.7,"b":0.1834,"c":10.0,"d":0.7399,"equation":"i = 778.7 * T^0.1834 / (t + 10)^0.7399"},
+  "metrics": {"ECMWF":{"all":{},"official":{}},"GFS":{"all":{},"official":{}},"ICON":{"all":{},"official":{}}},
+  "weights": {"rain":{"active":false,"values":{"ECMWF":0.4,"GFS":0.3,"ICON":0.3},"reason":"coleta inicial"},"gust":{"active":false,"values":{"ECMWF":0.35,"GFS":0.3,"ICON":0.35},"reason":"coleta inicial"}},
+  "counts": {"queue":0,"verifications":0,"official_rain":0}
+}
