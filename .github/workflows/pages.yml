@@ -51,8 +51,9 @@ jobs:
           grep -q 'Análise numérica V5' site/index.html
           grep -q './visual.css' site/index.html
           grep -q './visual.js' site/index.html
-          grep -q 'radar-gm-v6-radarfix' site/sw.js
-          grep -q 'makeRadarLayer' site/visual.js
+          grep -q 'radar-gm-v6-radarfix2' site/sw.js
+          grep -q 'rebuildRadarMap' site/visual.js
+          grep -q 'startVisualRadar' site/visual.js
       - name: Enviar site
         uses: actions/upload-pages-artifact@v3
         with:
