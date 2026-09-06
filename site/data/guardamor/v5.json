@@ -1,6 +1,6 @@
 {
   "version": "5.0",
-  "generated_at": "2026-09-06T21:33:57.720678+00:00",
+  "generated_at": "2026-09-06T21:48:53.943980+00:00",
   "city": {
     "id": "guarda-mor-mg",
     "name": "Guarda-Mor",
@@ -212,18 +212,18 @@
         {
           "lead": 3,
           "target": "2026-09-06T20:00",
-          "rain": 0.4,
-          "gust": 11.5,
-          "cape": 400.0,
+          "rain": 0.0,
+          "gust": 8.3,
+          "cape": 550.0,
           "dew": 20.4
         },
         {
           "lead": 6,
           "target": "2026-09-06T23:00",
           "rain": 0.0,
-          "gust": 7.2,
-          "cape": 320.0,
-          "dew": 20.0
+          "gust": 8.3,
+          "cape": 420.0,
+          "dew": 20.1
         }
       ]
     }
