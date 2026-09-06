@@ -1,9 +1,10 @@
 (() => {
   const $ = id => document.getElementById(id);
   const clamp = (v,a=0,b=100) => Math.max(a,Math.min(b,Number(v)||0));
-  let radarFixInstalled = false;
-  let activeRadarLayer = null;
-  let radarFrameSeq = 0;
+  let radarMoved = false;
+  let radarRebuilt = false;
+  let visualRadarTimer = null;
+  let visualRadarControlsInstalled = false;
 
   function setMetricIcons(){
     const icons={tempNow:'🌡️',humidityNow:'💧',windNow:'💨',gustNow:'🌬️',rain6:'🌧️',gust6:'💨',cape6:'⚡',dew6:'💧'};
@@ -21,31 +22,19 @@
     const cities=$('cityOverview')?.closest('section'); if(cities) cities.classList.add('visual-city-section');
   }
 
-  function invalidateRadarMap(){
-    try {
-      if (typeof map !== 'undefined' && map) {
-        requestAnimationFrame(()=>map.invalidateSize({pan:false,animate:false}));
-        setTimeout(()=>map.invalidateSize({pan:false,animate:false}),180);
-      }
-    } catch (_) {}
-  }
-
   function reorder(){
-    let moved=false;
     const official=document.querySelector('.official-card');
     const radar=$('map')?.closest('section');
     if(official && radar && official.nextElementSibling!==radar){
       official.insertAdjacentElement('afterend',radar);
-      moved=true;
+      radarMoved=true;
     }
 
     const models=$('models')?.closest('section');
     const cptec=$('cptecPanel');
     if(models && cptec && models.nextElementSibling!==cptec){
       models.insertAdjacentElement('afterend',cptec);
-      moved=true;
     }
-    if(moved) invalidateRadarMap();
   }
 
   function updateRiskGauge(){
@@ -54,7 +43,7 @@
     if(!badge || !Number.isFinite(level)) return;
     badge.style.setProperty('--gauge-pct',`${clamp(level/4*100)}%`);
     const eyebrow=document.querySelector('.risk-copy .eyebrow');
-    if(eyebrow) eyebrow.textContent='RISCO NUMÉRICO V5 • 6 H';
+    if(eyebrow && eyebrow.textContent!=='RISCO NUMÉRICO V5 • 6 H') eyebrow.textContent='RISCO NUMÉRICO V5 • 6 H';
   }
 
   function updateV4Bars(){
@@ -65,7 +54,7 @@
       if(card && Number.isFinite(value)) card.style.setProperty('--visual-pct',clamp(value));
     });
     const title=$('v4Panel')?.querySelector('.section-title h2');
-    if(title) title.textContent='Análise numérica V5';
+    if(title && title.textContent!=='Análise numérica V5') title.textContent='Análise numérica V5';
   }
 
   function updateModelBars(){
@@ -82,134 +71,78 @@
   function improveRadarHeader(){
     const radar=$('map')?.closest('section');
     const title=radar?.querySelector('.section-title h2');
-    if(title) title.textContent='Radar em tempo real';
-    const end=$('radarEnd');
-    if(end && !end.dataset.visual) end.dataset.visual='1';
+    if(title && title.textContent!=='Radar em tempo real') title.textContent='Radar em tempo real';
   }
 
-  function radarTileUrl(frame){
-    return `${frame.host}${frame.path}/256/{z}/{x}/{y}/2/1_0.png`;
+  function stopVisualRadar(){
+    if(visualRadarTimer) clearInterval(visualRadarTimer);
+    visualRadarTimer=null;
+    const btn=$('radarPlay');
+    if(btn) btn.textContent='▶ Animar';
   }
 
-  function removeRadarLayer(layer){
-    try {
-      if(layer && typeof map!=='undefined' && map?.hasLayer(layer)) map.removeLayer(layer);
-    } catch (_) {}
+  function startVisualRadar(){
+    if(typeof radarFrames==='undefined' || radarFrames.length<2 || typeof showRadarFrame!=='function') return;
+    try { if(typeof stopRadarPlay==='function') stopRadarPlay(); } catch(_) {}
+    if(radarIndex>=radarFrames.length-1) showRadarFrame(0,true);
+    const btn=$('radarPlay');
+    if(btn) btn.textContent='⏸ Pausar';
+    const delay=Math.max(500,Number(typeof radarDelay!=='undefined'?radarDelay:850)||850);
+    visualRadarTimer=setInterval(()=>{
+      if(document.hidden) return;
+      if(typeof radarFrames==='undefined' || radarFrames.length<2) return;
+      const next=radarIndex>=radarFrames.length-1?0:radarIndex+1;
+      showRadarFrame(next,true);
+    },delay);
   }
 
-  function makeRadarLayer(index){
-    if(!radarFrames?.[index] || typeof L==='undefined' || typeof map==='undefined' || !map) return null;
-    const existing=radarLayers?.[index];
-    if(existing) return existing;
-    const frame=radarFrames[index];
-    const layer=L.tileLayer(radarTileUrl(frame),{
-      tileSize:256,
-      opacity:.001,
-      zIndex:5,
-      maxNativeZoom:7,
-      maxZoom:9,
-      keepBuffer:2,
-      updateWhenIdle:true,
-      updateWhenZooming:false,
-      crossOrigin:true,
-      attribution:'RainViewer'
-    });
-    layer.__radarReady=false;
-    layer.on('load',()=>{ layer.__radarReady=true; });
-    layer.addTo(map);
-    radarLayers[index]=layer;
-    return layer;
-  }
+  function installRadarControls(){
+    if(visualRadarControlsInstalled || !$('radarPlay')) return;
+    visualRadarControlsInstalled=true;
 
-  function pruneRadarLayers(keepIndexes){
-    const keep=new Set(keepIndexes.filter(i=>i>=0));
-    radarLayers.forEach((layer,idx)=>{
-      if(layer && !keep.has(idx)){
-        removeRadarLayer(layer);
-        radarLayers[idx]=null;
-      }
-    });
-  }
+    $('radarPlay').addEventListener('click',e=>{
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      if(visualRadarTimer) stopVisualRadar(); else startVisualRadar();
+    },true);
 
-  function installRadarFix(){
-    if(radarFixInstalled) return;
-    try {
-      if(typeof L==='undefined' || typeof loadRadar!=='function' || typeof showRadarFrame!=='function') return;
-    } catch (_) { return; }
-    radarFixInstalled=true;
+    $('radarSpeed')?.addEventListener('change',()=>{
+      if(!visualRadarTimer) return;
+      stopVisualRadar();
+      setTimeout(startVisualRadar,40);
+    },true);
 
-    clearRadarLayers=function(){
-      try { (radarLayers||[]).forEach(removeRadarLayer); } catch (_) {}
-      radarLayers=[];
-      activeRadarLayer=null;
-      radarFrameSeq++;
-    };
-
-    buildRadarLayers=function(){
-      clearRadarLayers();
-      radarLayers=new Array(radarFrames.length).fill(null);
-      if(radarFrames.length){
-        makeRadarLayer(radarFrames.length-1);
-        if(radarFrames.length>1) makeRadarLayer(0);
-      }
-      invalidateRadarMap();
-    };
-
-    showRadarFrame=function(i,keepPlaying=false){
-      if(!radarFrames.length || typeof map==='undefined' || !map) return;
-      radarIndex=Math.max(0,Math.min(Number(i)||0,radarFrames.length-1));
-      const seq=++radarFrameSeq;
-      const target=makeRadarLayer(radarIndex);
-      if(!target) return;
-
-      const frame=radarFrames[radarIndex];
-      if($('radarSlider')) $('radarSlider').value=radarIndex;
-      const stamp=new Date(frame.time*1000).toLocaleString('pt-BR',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});
-      if($('radarTime')) $('radarTime').textContent=`${stamp}${radarIndex===radarFrames.length-1?' · mais recente':''}`;
-
-      const commit=()=>{
-        if(seq!==radarFrameSeq) return;
-        const previous=activeRadarLayer;
-        target.setOpacity(.74);
-        activeRadarLayer=target;
-        if(previous && previous!==target) previous.setOpacity(0);
-
-        const nextIndex=radarIndex>=radarFrames.length-1?0:radarIndex+1;
-        const previousIndex=radarIndex<=0?radarFrames.length-1:radarIndex-1;
-        makeRadarLayer(nextIndex);
-        pruneRadarLayers([radarIndex,nextIndex,previousIndex]);
-        invalidateRadarMap();
-      };
-
-      if(target.__radarReady) commit();
-      else {
-        target.once('load',commit);
-        setTimeout(commit,1300);
-      }
-      if(!keepPlaying) stopRadarPlay();
-    };
-
-    scheduleRadarFrame=function(){
-      if(!radarTimer || radarFrames.length<2) return;
-      const atEnd=radarIndex>=radarFrames.length-1;
-      const wait=atEnd?Math.max(1500,radarDelay*1.7):Math.max(500,radarDelay);
-      radarTimer=setTimeout(()=>{
-        if(!radarTimer) return;
-        showRadarFrame(atEnd?0:radarIndex+1,true);
-        scheduleRadarFrame();
-      },wait);
-    };
-
-    window.addEventListener('resize',invalidateRadarMap,{passive:true});
-    window.addEventListener('orientationchange',()=>setTimeout(invalidateRadarMap,250),{passive:true});
     document.addEventListener('visibilitychange',()=>{
-      if(!document.hidden) setTimeout(invalidateRadarMap,120);
+      if(document.hidden) return;
+      try { if(typeof map!=='undefined' && map) setTimeout(()=>map.invalidateSize({pan:false,animate:false}),80); } catch(_) {}
     });
+  }
 
-    setTimeout(()=>{
-      invalidateRadarMap();
-      try { loadRadar(); } catch (_) {}
-    },250);
+  function rebuildRadarMap(){
+    if(radarRebuilt || !radarMoved) return;
+    try {
+      if(typeof L==='undefined' || typeof initMap!=='function' || typeof map==='undefined') return;
+      radarRebuilt=true;
+      stopVisualRadar();
+      try { if(map) map.remove(); } catch(_) {}
+      map=null;
+      try { cityMarker=null; } catch(_) {}
+      try { radarLayers=[]; radarFrames=[]; radarIndex=0; } catch(_) {}
+      const mapEl=$('map');
+      if(mapEl){
+        mapEl.innerHTML='';
+        if(mapEl._leaflet_id) delete mapEl._leaflet_id;
+      }
+      requestAnimationFrame(()=>{
+        initMap();
+        setTimeout(()=>{
+          try { map?.invalidateSize({pan:false,animate:false}); } catch(_) {}
+        },180);
+      });
+    } catch(err){
+      console.warn('Reconstrução do radar V6',err);
+      radarRebuilt=false;
+    }
   }
 
   function apply(){
@@ -221,16 +154,16 @@
     updateV4Bars();
     updateModelBars();
     improveRadarHeader();
-    installRadarFix();
+    installRadarControls();
+    rebuildRadarMap();
   }
 
   const observer=new MutationObserver(()=>requestAnimationFrame(apply));
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>{
+  const boot=()=>{
     apply();
-    observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class']});
-  },{once:true});
-  else {
-    apply();
-    observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class']});
-  }
+    observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+    setInterval(apply,1200);
+  };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
 })();
