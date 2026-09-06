@@ -1,4 +1,4 @@
-const CACHE = 'radar-gm-v3-cptec';
+const CACHE = 'radar-gm-v4-smooth-radar';
 const SHELL = [
   './', './index.html', './styles.css', './app.js', './cptec.js', './manifest.webmanifest',
   './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png'
