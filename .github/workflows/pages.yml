@@ -34,8 +34,14 @@ jobs:
           test -f site/sw.js
           test -f site/app.js
           test -f site/cptec.js
+          test -f site/v4.js
+          test -f site/v4.css
           node --check site/app.js
           node --check site/cptec.js
+          node --check site/v4.js
+          grep -q 'Análise numérica V4' site/index.html
+          grep -q './v4.js' site/sw.js
+          grep -q './v4.css' site/sw.js
       - name: Enviar site
         uses: actions/upload-pages-artifact@v3
         with:
