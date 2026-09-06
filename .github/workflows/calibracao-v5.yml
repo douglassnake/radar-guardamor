@@ -10,6 +10,8 @@ on:
       - 'scripts/collect_v5.py'
       - 'scripts/install_v5.py'
       - 'site/v5.js'
+      - 'site/visual.js'
+      - 'site/visual.css'
       - '.github/workflows/calibracao-v5.yml'
 
 permissions:
@@ -38,18 +40,23 @@ jobs:
         env:
           CEMADEN_TOKEN: ${{ secrets.CEMADEN_TOKEN }}
         run: python scripts/collect_v5.py
-      - name: Validar site V5
+      - name: Validar site V5/V6
         run: |
           node --check site/v4.js
           node --check site/v5.js
+          node --check site/visual.js
           grep -q './v5.js' site/index.html
+          grep -q './visual.js' site/index.html
+          grep -q './visual.css' site/index.html
           grep -q './v5.js' site/sw.js
-          grep -q 'radar-gm-v5-calibracao' site/sw.js
+          grep -q './visual.js' site/sw.js
+          grep -q './visual.css' site/sw.js
+          grep -q 'radar-gm-v6-visual' site/sw.js
       - name: Persistir historico e integracao
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/v5_state.json site/data/guardamor/v5.json site/index.html site/styles.css site/sw.js site/v4.js
+          git add data/v5_state.json site/data/guardamor/v5.json site/index.html site/styles.css site/sw.js site/v4.js site/visual.js site/visual.css
           if git diff --cached --quiet; then
             echo "Sem alteracoes"
           else
