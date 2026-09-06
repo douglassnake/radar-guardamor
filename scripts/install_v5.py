@@ -2,16 +2,6 @@
 from pathlib import Path
 import re
 
-
-def replace_once(path, old, new):
-    p=Path(path); text=p.read_text(encoding='utf-8')
-    if new in text:
-        return False
-    if old not in text:
-        raise SystemExit(f'Marcador não encontrado em {path}')
-    p.write_text(text.replace(old,new,1),encoding='utf-8')
-    return True
-
 # V4 passa a aceitar pesos oficiais do servidor V5 quando estiverem ativos.
 p=Path('site/v4.js'); text=p.read_text(encoding='utf-8')
 marker='''    const base = normalise(BASE_WEIGHTS[metric] || BASE_WEIGHTS.dew, names);\n'''
@@ -37,11 +27,16 @@ if '/* V5: calibração persistente' not in text:
     text += css
 p.write_text(text,encoding='utf-8')
 
-# Atualiza shell/cache PWA.
+# Atualiza shell/cache PWA independentemente da ordem atual dos arquivos.
 p=Path('site/sw.js'); text=p.read_text(encoding='utf-8')
 text=re.sub(r"const CACHE = '[^']+';","const CACHE = 'radar-gm-v5-calibracao';",text,count=1)
 if "'./v5.js'" not in text:
-    text=text.replace("'./cptec.js', './manifest.webmanifest'","'./cptec.js', './v4.js', './v5.js', './data/guardamor/v5.json', './manifest.webmanifest'",1)
+    if "'./v4.js', './manifest.webmanifest'" in text:
+        text=text.replace("'./v4.js', './manifest.webmanifest'","'./v4.js', './v5.js', './data/guardamor/v5.json', './manifest.webmanifest'",1)
+    elif "'./manifest.webmanifest'" in text:
+        text=text.replace("'./manifest.webmanifest'","'./v5.js', './data/guardamor/v5.json', './manifest.webmanifest'",1)
+    else:
+        raise SystemExit('Lista SHELL não reconhecida em sw.js')
 elif "'./data/guardamor/v5.json'" not in text:
     text=text.replace("'./v5.js'","'./v5.js', './data/guardamor/v5.json'",1)
 p.write_text(text,encoding='utf-8')
