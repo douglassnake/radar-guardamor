@@ -1,6 +1,6 @@
-const CACHE = 'radar-gm-v4-smooth-radar';
+const CACHE = 'radar-gm-v5-numerical-v4';
 const SHELL = [
-  './', './index.html', './styles.css', './app.js', './cptec.js', './manifest.webmanifest',
+  './', './index.html', './styles.css', './v4.css', './app.js', './cptec.js', './v4.js', './manifest.webmanifest',
   './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png'
 ];
 self.addEventListener('install', event => {
