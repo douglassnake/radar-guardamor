@@ -37,6 +37,8 @@ jobs:
           test -f site/v4.js
           test -f site/v4.css
           test -f site/v5.js
+          test -f site/visual.js
+          test -f site/visual.css
           test -f site/data/guardamor/v5.json
           test -f scripts/collect_v5.py
           test -f scripts/install_v5.py
@@ -44,8 +46,12 @@ jobs:
           node --check site/cptec.js
           node --check site/v4.js
           node --check site/v5.js
+          node --check site/visual.js
           python -m py_compile scripts/collect_v5.py scripts/install_v5.py
-          grep -q 'Análise numérica V4' site/index.html
+          grep -q 'Análise numérica V5' site/index.html
+          grep -q './visual.css' site/index.html
+          grep -q './visual.js' site/index.html
+          grep -q 'radar-gm-v6-visual' site/sw.js
       - name: Enviar site
         uses: actions/upload-pages-artifact@v3
         with:
