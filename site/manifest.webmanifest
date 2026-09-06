@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#07101d",
   "theme_color": "#081321",
-  "description": "Monitor meteorológico para Guarda-Mor, Minas Gerais.",
+  "description": "Monitor meteorológico multi-cidade com radar e comparação ECMWF, GFS e ICON.",
   "icons": [
     {"src":"./icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
     {"src":"./icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
