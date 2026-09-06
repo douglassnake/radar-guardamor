@@ -1,4 +1,4 @@
-const CACHE = 'radar-gm-v6-radarfix';
+const CACHE = 'radar-gm-v6-radarfix2';
 const SHELL = [
   './', './index.html', './styles.css', './v4.css', './visual.css', './app.js', './cptec.js', './v4.js', './v5.js', './visual.js', './data/guardamor/v5.json', './manifest.webmanifest',
   './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png'
