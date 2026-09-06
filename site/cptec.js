@@ -132,7 +132,7 @@
       if (myToken !== refreshToken) return;
       console.warn("CPTEC/INPE XML:", error);
       renderFallback(city);
-      setStatus("nowcasting oficial", "fallback");
+      setStatus("links oficiais disponíveis", "fallback");
     }
   }
 

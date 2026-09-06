@@ -485,7 +485,8 @@ $("overviewFavBtn").addEventListener("click", () => setOverviewMode("favorites")
 $("radarPrev").addEventListener("click", () => showRadarFrame(radarIndex-1));
 $("radarNext").addEventListener("click", () => showRadarFrame(radarIndex+1));
 $("radarPlay").addEventListener("click", toggleRadarPlay);
-$("radarSlider").addEventListener("input", e => showRadarFrame(Number(e.target.value)));\n$("radarSpeed")?.addEventListener("change", e => { radarDelay = Number(e.target.value); if (radarTimer) { stopRadarPlay(); toggleRadarPlay(); } });
+$("radarSlider").addEventListener("input", e => showRadarFrame(Number(e.target.value)));
+$("radarSpeed")?.addEventListener("change", e => { radarDelay = Number(e.target.value); if (radarTimer) { stopRadarPlay(); toggleRadarPlay(); } });
 $("installHelp").addEventListener("click", () => $("installDialog").showModal());
 $("aboutRisk").addEventListener("click", () => $("riskDialog").showModal());
 document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", () => $(b.dataset.close).close()));
