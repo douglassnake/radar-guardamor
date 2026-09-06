@@ -1,0 +1,53 @@
+name: Coletar calibracao V5
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/collect_v5.py'
+      - 'scripts/install_v5.py'
+      - 'site/v5.js'
+      - '.github/workflows/calibracao-v5.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: calibracao-v5
+  cancel-in-progress: true
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Validar scripts
+        run: python -m py_compile scripts/collect_v5.py scripts/install_v5.py
+      - name: Instalar integracao V5
+        run: python scripts/install_v5.py
+      - name: Coletar e recalcular skill
+        env:
+          CEMADEN_TOKEN: ${{ secrets.CEMADEN_TOKEN }}
+        run: python scripts/collect_v5.py
+      - name: Validar site V5
+        run: |
+          node --check site/v4.js
+          node --check site/v5.js
+          grep -q './v5.js' site/index.html
+          grep -q './v5.js' site/sw.js
+          grep -q 'radar-gm-v5-calibracao' site/sw.js
+      - name: Persistir historico e integracao
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/v5_state.json site/data/guardamor/v5.json site/index.html site/styles.css site/sw.js site/v4.js
+          if git diff --cached --quiet; then
+            echo "Sem alteracoes"
+          else
+            git commit -m "data: atualiza calibracao V5"
+            git push origin HEAD:main
+          fi
