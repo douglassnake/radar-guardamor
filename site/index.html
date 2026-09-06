@@ -16,7 +16,9 @@
   <link rel="preconnect" href="https://geocoding-api.open-meteo.com">
   <link rel="preconnect" href="https://api.rainviewer.com">
   <link rel="preconnect" href="https://tile.openstreetmap.org">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3ynxJ8HrAd4GAmoovYb1Zg4R0PA=" crossorigin="">
+  <link rel="preconnect" href="https://servicos.cptec.inpe.br">
+  <link rel="preconnect" href="https://sigma.cptec.inpe.br">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3ynxJ8HrAd4GAmoovYB1Zg4R0PA=" crossorigin="">
   <title>Radar Guarda-Mor</title>
 </head>
 <body>
@@ -40,7 +42,7 @@
           <button id="addCityBtn" class="square-btn" type="button" aria-label="Adicionar cidade" title="Adicionar cidade">＋</button>
         </div>
       </div>
-      <p class="city-note">Trocar a cidade recalcula os três modelos e reposiciona o radar automaticamente.</p>
+      <p class="city-note">Trocar a cidade recalcula os três modelos, atualiza a camada CPTEC/INPE e reposiciona o radar automaticamente.</p>
     </section>
 
     <section class="risk-card glass" aria-live="polite">
@@ -56,6 +58,19 @@
     <section class="official-card">
       <div><strong>Avisos oficiais</strong><p>O índice é auxiliar. Em situação severa, prevalecem INMET, Defesa Civil e Bombeiros.</p></div>
       <a href="https://avisos.inmet.gov.br/" target="_blank" rel="noopener">Abrir INMET</a>
+    </section>
+
+    <section id="cptecPanel" class="cptec-panel glass">
+      <div class="section-title"><h2>CPTEC / INPE</h2><span id="cptecStatus" class="cptec-status muted">conectando…</span></div>
+      <div id="cptecForecast" class="cptec-forecast" aria-live="polite">
+        <div class="cptec-loading">Consultando produtos oficiais…</div>
+      </div>
+      <div class="cptec-actions">
+        <a id="cptecRadarLink" class="cptec-link" href="https://sigma.cptec.inpe.br/radar/index.jsp?i=br" target="_blank" rel="noopener"><strong>Radar SIGMA</strong><span>precipitação observada</span></a>
+        <a id="cptecFortraccLink" class="cptec-link" href="https://sigma.cptec.inpe.br/fortracc/" target="_blank" rel="noopener"><strong>FORTRACC</strong><span>trajetória 0–120 min</span></a>
+        <a id="cptecSigmaLink" class="cptec-link" href="https://sigma.cptec.inpe.br/" target="_blank" rel="noopener"><strong>Satélite / Chuva</strong><span>GOES + Hidroestimador</span></a>
+      </div>
+      <p class="source-note cptec-note">Prioridade operacional: avisos oficiais → radar/observação CPTEC → FORTRACC → satélite → modelos. O FORTRACC é usado para validar deslocamento de sistemas convectivos nas próximas 2 horas.</p>
     </section>
 
     <section>
@@ -90,7 +105,7 @@
         <button id="overviewFavBtn" class="pill-btn" type="button">★ Favoritas</button>
       </div>
       <div id="cityOverview" class="city-overview" aria-live="polite"></div>
-      <p class="source-note overview-note">A visão rápida usa a previsão combinada do Open-Meteo para triagem. Ao abrir uma cidade, o painel principal recalcula ECMWF, GFS e ICON separadamente.</p>
+      <p class="source-note overview-note">A visão rápida usa a previsão combinada do Open-Meteo para triagem. Ao abrir uma cidade, o painel principal recalcula ECMWF, GFS e ICON separadamente e atualiza a camada CPTEC/INPE.</p>
     </section>
 
     <section>
@@ -103,7 +118,7 @@
           <button id="radarNext" class="small-btn" type="button">▶</button>
           <input id="radarSlider" aria-label="Linha do tempo do radar" type="range" min="0" max="0" value="0">
         </div>
-        <p class="source-note">Radar: RainViewer • mapa base: OpenStreetMap. O radar é observação recente; não é previsão futura.</p>
+        <p class="source-note">Mapa rápido: RainViewer + OpenStreetMap. Para validação oficial e nowcasting, use Radar SIGMA e FORTRACC na seção CPTEC/INPE acima.</p>
       </div>
     </section>
 
@@ -138,19 +153,20 @@
 
     <dialog id="riskDialog">
       <h2>Índice meteorológico 0–4</h2>
-      <p>O nível combina consenso entre modelos, CAPE, chuva prevista, rajadas e umidade. Ele é deliberadamente conservador e não substitui avisos oficiais.</p>
+      <p>O nível combina consenso entre modelos, CAPE, chuva prevista, rajadas e umidade. Radar/nowcasting CPTEC/INPE é uma camada de validação separada e avisos oficiais sempre prevalecem.</p>
       <ul><li><strong>0 Normal:</strong> sem sinal relevante.</li><li><strong>1 Atenção:</strong> ambiente ficando favorável.</li><li><strong>2 Alerta:</strong> instabilidade/chuva/rajadas relevantes.</li><li><strong>3 Perigo:</strong> combinação forte de sinais.</li><li><strong>4 Severo:</strong> cenário extremo no consenso dos modelos.</li></ul>
       <button data-close="riskDialog" class="primary-btn" type="button">Fechar</button>
     </dialog>
 
     <footer>
       <p>Radar Guarda-Mor • monitor meteorológico multi-cidade • PWA experimental</p>
-      <p>Previsão: Open-Meteo / ECMWF / NOAA-GFS / DWD-ICON. Radar: RainViewer. Base cartográfica: OpenStreetMap.</p>
+      <p>Observação/nowcasting: CPTEC/INPE SIGMA + FORTRACC. Previsão: Open-Meteo / ECMWF / NOAA-GFS / DWD-ICON. Mapa rápido: RainViewer. Base cartográfica: OpenStreetMap.</p>
       <p>Em emergência: Defesa Civil 199 • Bombeiros 193.</p>
     </footer>
   </main>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="./app.js"></script>
+  <script src="./cptec.js"></script>
 </body>
 </html>
