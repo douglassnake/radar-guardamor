@@ -1,6 +1,6 @@
 {
   "version": "5.0",
-  "generated_at": "2026-09-06T22:53:04.162423+00:00",
+  "generated_at": "2026-09-07T01:00:28.214946+00:00",
   "city": {
     "id": "guarda-mor-mg",
     "name": "Guarda-Mor",
@@ -162,48 +162,28 @@
     }
   },
   "counts": {
-    "queue": 12,
+    "queue": 16,
     "verifications": 0,
     "official_rain": 0
   },
   "latest_forecasts": {
-    "ECMWF": {
-      "targets": [
-        {
-          "lead": 3,
-          "target": "2026-09-06T21:00",
-          "rain": 1.7,
-          "gust": 15.5,
-          "cape": 900.0,
-          "dew": 21.1
-        },
-        {
-          "lead": 6,
-          "target": "2026-09-07T00:00",
-          "rain": 0.5,
-          "gust": 7.2,
-          "cape": 490.0,
-          "dew": 20.2
-        }
-      ]
-    },
     "GFS": {
       "targets": [
         {
           "lead": 3,
-          "target": "2026-09-06T21:00",
+          "target": "2026-09-07T00:00",
           "rain": 0.0,
-          "gust": 15.1,
-          "cape": 320.0,
-          "dew": 16.9
+          "gust": 5.0,
+          "cape": 20.0,
+          "dew": 16.2
         },
         {
           "lead": 6,
-          "target": "2026-09-07T00:00",
+          "target": "2026-09-07T03:00",
           "rain": 0.0,
-          "gust": 3.2,
-          "cape": 120.0,
-          "dew": 18.4
+          "gust": 4.0,
+          "cape": 20.0,
+          "dew": 17.2
         }
       ]
     },
@@ -211,19 +191,19 @@
       "targets": [
         {
           "lead": 3,
-          "target": "2026-09-06T21:00",
-          "rain": 0.0,
-          "gust": 8.3,
-          "cape": 490.0,
-          "dew": 20.2
-        },
-        {
-          "lead": 6,
           "target": "2026-09-07T00:00",
           "rain": 1.1,
           "gust": 6.8,
           "cape": 360.0,
           "dew": 20.0
+        },
+        {
+          "lead": 6,
+          "target": "2026-09-07T03:00",
+          "rain": 2.4,
+          "gust": 10.8,
+          "cape": 300.0,
+          "dew": 19.9
         }
       ]
     }
