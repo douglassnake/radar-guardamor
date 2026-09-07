@@ -1,6 +1,6 @@
 {
   "version": "5.0",
-  "generated_at": "2026-09-07T12:29:04.943626+00:00",
+  "generated_at": "2026-09-07T18:15:01.985853+00:00",
   "city": {
     "id": "guarda-mor-mg",
     "name": "Guarda-Mor",
@@ -52,18 +52,18 @@
   "metrics": {
     "ECMWF": {
       "all": {
-        "n": 6,
-        "rain_n": 6,
-        "gust_n": 6,
-        "mae_rain": 0.6,
-        "rmse_rain": 0.8465616732800196,
-        "mae_gust": 2.033333333333333,
-        "rmse_gust": 2.878078062411326,
-        "events_n": 6,
+        "n": 8,
+        "rain_n": 8,
+        "gust_n": 8,
+        "mae_rain": 0.45,
+        "rmse_rain": 0.733143914930759,
+        "mae_gust": 2.7999999999999994,
+        "rmse_gust": 3.994371039350249,
+        "events_n": 8,
         "pod": null,
         "far": 1.0,
         "csi": 0.0,
-        "brier": 0.3333333333333333
+        "brier": 0.25
       },
       "official": {
         "n": 0,
@@ -82,14 +82,14 @@
     },
     "GFS": {
       "all": {
-        "n": 8,
-        "rain_n": 8,
-        "gust_n": 8,
-        "mae_rain": 0.13749999999999998,
-        "rmse_rain": 0.27156951228000537,
-        "mae_gust": 5.15,
-        "rmse_gust": 6.071243694664217,
-        "events_n": 8,
+        "n": 10,
+        "rain_n": 10,
+        "gust_n": 10,
+        "mae_rain": 0.15,
+        "rmse_rain": 0.27386127875258304,
+        "mae_gust": 6.790000000000001,
+        "rmse_gust": 8.077437712542265,
+        "events_n": 10,
         "pod": null,
         "far": null,
         "csi": null,
@@ -112,18 +112,18 @@
     },
     "ICON": {
       "all": {
-        "n": 8,
-        "rain_n": 8,
-        "gust_n": 8,
-        "mae_rain": 0.75,
-        "rmse_rain": 1.0535653752852738,
-        "mae_gust": 5.05,
-        "rmse_gust": 6.456004956627589,
-        "events_n": 8,
+        "n": 10,
+        "rain_n": 10,
+        "gust_n": 10,
+        "mae_rain": 0.61,
+        "rmse_rain": 0.9428679653058534,
+        "mae_gust": 4.22,
+        "rmse_gust": 5.794652707453658,
+        "events_n": 10,
         "pod": null,
         "far": 1.0,
         "csi": 0.0,
-        "brier": 0.375
+        "brier": 0.3
       },
       "official": {
         "n": 0,
@@ -163,7 +163,7 @@
   },
   "counts": {
     "queue": 6,
-    "verifications": 22,
+    "verifications": 28,
     "official_rain": 0
   },
   "latest_forecasts": {
@@ -171,19 +171,19 @@
       "targets": [
         {
           "lead": 3,
-          "target": "2026-09-07T11:00",
-          "rain": 0.0,
-          "gust": 24.1,
-          "cape": 430.0,
-          "dew": 17.9
+          "target": "2026-09-07T17:00",
+          "rain": 0.9,
+          "gust": 20.2,
+          "cape": 790.0,
+          "dew": 20.4
         },
         {
           "lead": 6,
-          "target": "2026-09-07T14:00",
-          "rain": 0.0,
-          "gust": 24.8,
-          "cape": 670.0,
-          "dew": 17.8
+          "target": "2026-09-07T20:00",
+          "rain": 2.3,
+          "gust": 14.4,
+          "cape": 400.0,
+          "dew": 19.9
         }
       ]
     },
@@ -191,19 +191,19 @@
       "targets": [
         {
           "lead": 3,
-          "target": "2026-09-07T11:00",
+          "target": "2026-09-07T17:00",
           "rain": 0.0,
-          "gust": 18.7,
-          "cape": 160.0,
-          "dew": 17.2
+          "gust": 11.2,
+          "cape": 320.0,
+          "dew": 16.7
         },
         {
           "lead": 6,
-          "target": "2026-09-07T14:00",
-          "rain": 0.4,
-          "gust": 13.7,
-          "cape": 320.0,
-          "dew": 17.4
+          "target": "2026-09-07T20:00",
+          "rain": 2.2,
+          "gust": 2.5,
+          "cape": 170.0,
+          "dew": 19.2
         }
       ]
     },
@@ -211,18 +211,18 @@
       "targets": [
         {
           "lead": 3,
-          "target": "2026-09-07T11:00",
-          "rain": 0.0,
-          "gust": 31.3,
-          "cape": 240.0,
-          "dew": 19.4
+          "target": "2026-09-07T17:00",
+          "rain": 3.3,
+          "gust": 26.6,
+          "cape": 670.0,
+          "dew": 20.8
         },
         {
           "lead": 6,
-          "target": "2026-09-07T14:00",
-          "rain": 0.1,
-          "gust": 26.6,
-          "cape": 500.0,
+          "target": "2026-09-07T20:00",
+          "rain": 0.0,
+          "gust": 18.7,
+          "cape": 250.0,
           "dew": 19.6
         }
       ]
