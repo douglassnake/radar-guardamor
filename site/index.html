@@ -75,6 +75,25 @@
       <p class="source-note cptec-note">Prioridade operacional: avisos oficiais → radar/observação CPTEC → FORTRACC → satélite → modelos. Abra o FORTRACC para validar manualmente o deslocamento de sistemas convectivos nas próximas 2 horas; essa informação ainda não entra automaticamente no índice 0–4.</p>
     </section>
 
+    <section class="quick-note glass">
+      <div class="section-title quick-note-title"><h2>Anotação rápida</h2><span class="muted">observação local</span></div>
+      <div class="quick-note-grid">
+        <div class="quick-question">
+          <span>Choveu?</span>
+          <div class="rain-choice" role="group" aria-label="Choveu?">
+            <button id="rainYes" class="rain-choice-btn" type="button" data-value="sim">Sim</button>
+            <button id="rainNo" class="rain-choice-btn" type="button" data-value="nao">Não</button>
+          </div>
+        </div>
+        <label class="quick-time">Horário
+          <input id="rainTime" type="time" aria-label="Horário da observação">
+        </label>
+        <button id="saveRainNote" class="primary-btn quick-save" type="button">Salvar anotação</button>
+      </div>
+      <div id="rainNoteFeedback" class="quick-feedback muted" aria-live="polite"></div>
+      <div id="rainNoteHistory" class="quick-history"></div>
+    </section>
+
     <section>
       <div class="section-title"><h2>Agora</h2><span id="weatherText" class="muted">—</span></div>
       <div class="metric-grid">
