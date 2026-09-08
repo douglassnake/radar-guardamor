@@ -1,4 +1,4 @@
-const CACHE = 'radar-gm-v9-cartobase';
+const CACHE = 'radar-gm-v10-canvas-radar';
 const SHELL = [
   './', './index.html', './styles.css', './v4.css', './visual.css', './radarfix.css', './app.js', './cptec.js', './v4.js', './v5.js', './visual.js', './data/guardamor/v5.json', './manifest.webmanifest',
   './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png'
