@@ -474,6 +474,60 @@ function setOverviewMode(mode) {
   loadCityOverview();
 }
 
+const RAIN_NOTES_KEY = "radarGM:rainNotes";
+let pendingRainValue = null;
+
+function rainNowTime() {
+  return new Date().toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit", hour12:false});
+}
+function loadRainNotes() {
+  try { return JSON.parse(localStorage.getItem(RAIN_NOTES_KEY) || "[]"); }
+  catch { return []; }
+}
+function saveRainNotes(notes) {
+  localStorage.setItem(RAIN_NOTES_KEY, JSON.stringify(notes.slice(0, 20)));
+}
+function renderRainNotes() {
+  const box = $("rainNoteHistory");
+  if (!box) return;
+  const notes = loadRainNotes().slice(0, 5);
+  if (!notes.length) {
+    box.innerHTML = '<span class="quick-empty">Nenhuma observação registrada.</span>';
+    return;
+  }
+  box.innerHTML = notes.map(n => `<div class="quick-history-row"><span class="${n.rained ? "rain-yes" : "rain-no"}">${n.rained ? "Choveu" : "Não choveu"}</span><strong>${n.time}</strong><small>${n.date}</small></div>`).join("");
+}
+function setPendingRain(value) {
+  pendingRainValue = value;
+  $("rainYes")?.classList.toggle("active", value === "sim");
+  $("rainNo")?.classList.toggle("active", value === "nao");
+}
+function saveQuickRainNote() {
+  if (!pendingRainValue) {
+    $("rainNoteFeedback").textContent = "Escolha Sim ou Não.";
+    return;
+  }
+  const time = $("rainTime").value || rainNowTime();
+  const now = new Date();
+  const note = {
+    rained: pendingRainValue === "sim",
+    time,
+    date: now.toLocaleDateString("pt-BR"),
+    city: currentCity?.name || "Guarda-Mor",
+    createdAt: now.toISOString()
+  };
+  const notes = loadRainNotes();
+  notes.unshift(note);
+  saveRainNotes(notes);
+  $("rainNoteFeedback").textContent = `Salvo: ${note.rained ? "choveu" : "não choveu"} às ${time}.`;
+  renderRainNotes();
+}
+$("rainYes")?.addEventListener("click", () => setPendingRain("sim"));
+$("rainNo")?.addEventListener("click", () => setPendingRain("nao"));
+$("saveRainNote")?.addEventListener("click", saveQuickRainNote);
+if ($("rainTime")) $("rainTime").value = rainNowTime();
+renderRainNotes();
+
 $("refreshBtn").addEventListener("click", () => { loadWeather(); loadRadar(); loadCityOverview(); });
 $("citySelect").addEventListener("change", e => selectCity(e.target.value));
 $("favoriteBtn").addEventListener("click", toggleFavorite);
