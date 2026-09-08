@@ -54,7 +54,7 @@ jobs:
           grep -q './visual.css' site/index.html
           grep -q './visual.js' site/index.html
           grep -q './zoom.js' site/index.html
-          grep -q 'radar-gm-v15-radar-zoom' site/sw.js
+          grep -q 'radar-gm-v16-zoom-hotfix' site/sw.js
           grep -q 'tile.openstreetmap.org' site/sw.js
           grep -q 'installOwnRadar' site/visual.js
           grep -q 'renderOwnRadarFrame' site/visual.js
@@ -63,6 +63,7 @@ jobs:
           grep -q 'Validar no SIGMA' site/visual.js
           grep -q 'radarZoomIn' site/zoom.js
           grep -q 'radarZoomOut' site/zoom.js
+          ! grep -q 'new MutationObserver' site/zoom.js
       - name: Enviar site
         uses: actions/upload-pages-artifact@v3
         with:
