@@ -1,4 +1,4 @@
-const CACHE = 'radar-gm-v15-radar-zoom';
+const CACHE = 'radar-gm-v16-zoom-hotfix';
 const SHELL = [
   './', './index.html', './styles.css', './v4.css', './visual.css', './app.js', './cptec.js', './v4.js', './v5.js', './visual.js', './zoom.js', './data/guardamor/v5.json', './manifest.webmanifest',
   './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png'
@@ -19,9 +19,6 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  // O provedor CARTO passou a exibir "API KEY REQUIRED" nos tiles.
-  // Mantemos o renderizador próprio do radar e substituímos somente o
-  // mapa-base por OpenStreetMap, sem chave de API.
   if (url.hostname.endsWith('basemaps.cartocdn.com')) {
     const match = url.pathname.match(/\/light_all\/(\d+)\/(\d+)\/(\d+)\.png$/);
     if (match) {
