@@ -2,26 +2,30 @@
   const $ = id => document.getElementById(id);
   const clamp = (v,a=0,b=100) => Math.max(a,Math.min(b,Number(v)||0));
   let radarMoved = false;
-  let radarRebuilt = false;
   let visualRadarTimer = null;
   let visualRadarControlsInstalled = false;
+  let radarBufferLayers = [];
+  let activeRadarBuffer = 0;
+  let radarSwitchToken = 0;
 
   function ensureRadarIsolation(){
     if(!document.getElementById('radarFixCss')){
       const link=document.createElement('link');
       link.id='radarFixCss';
       link.rel='stylesheet';
-      link.href='./radarfix.css?v=3';
+      link.href='./radarfix.css?v=4';
       document.head.appendChild(link);
     }
     if(!document.getElementById('radarCriticalIsolation')){
       const style=document.createElement('style');
       style.id='radarCriticalIsolation';
       style.textContent=`
-        .visual-v6 .radar-card{position:relative!important;overflow:hidden!important;isolation:isolate!important;contain:layout paint!important}
-        .visual-v6 #map,.visual-v6 #map.leaflet-container{position:relative!important;overflow:hidden!important;contain:layout paint size!important;clip-path:inset(0)!important;-webkit-clip-path:inset(0)!important;isolation:isolate!important;z-index:1!important}
+        .visual-v6 .radar-card{position:relative!important;overflow:hidden!important;isolation:isolate!important}
+        .visual-v6 #map,.visual-v6 #map.leaflet-container{position:relative!important;overflow:hidden!important;isolation:isolate!important;z-index:1!important}
         .visual-v6 .radar-timeline-labels,.visual-v6 .radar-slider,.visual-v6 .radar-controls,.visual-v6 .radar-card>.source-note{position:relative!important;z-index:50!important;background:#061b2e!important}
         .visual-v6 .radar-controls button,.visual-v6 .radar-controls select,.visual-v6 .radar-controls label{position:relative!important;z-index:60!important;pointer-events:auto!important;touch-action:manipulation!important}
+        .visual-v6 #map .leaflet-tile-pane{will-change:auto!important}
+        .visual-v6 #map .leaflet-tile{backface-visibility:hidden;-webkit-backface-visibility:hidden}
       `;
       document.head.appendChild(style);
     }
@@ -43,12 +47,23 @@
     const cities=$('cityOverview')?.closest('section'); if(cities) cities.classList.add('visual-city-section');
   }
 
+  function invalidateRadarMap(){
+    try {
+      if(typeof map!=='undefined' && map){
+        requestAnimationFrame(()=>map.invalidateSize({pan:false,animate:false}));
+        setTimeout(()=>map.invalidateSize({pan:false,animate:false}),120);
+        setTimeout(()=>map.invalidateSize({pan:false,animate:false}),500);
+      }
+    } catch(_) {}
+  }
+
   function reorder(){
     const official=document.querySelector('.official-card');
     const radar=$('map')?.closest('section');
     if(official && radar && official.nextElementSibling!==radar){
       official.insertAdjacentElement('afterend',radar);
       radarMoved=true;
+      invalidateRadarMap();
     }
 
     const models=$('models')?.closest('section');
@@ -95,11 +110,115 @@
     if(title && title.textContent!=='Radar em tempo real') title.textContent='Radar em tempo real';
   }
 
+  function radarUrl(frame){
+    return `${frame.host}${frame.path}/256/{z}/{x}/{y}/2/1_0.png`;
+  }
+
+  function removeAllRadarLayers(){
+    try {
+      if(typeof radarLayers!=='undefined' && Array.isArray(radarLayers)){
+        radarLayers.forEach(layer=>{ try{ if(map?.hasLayer(layer)) map.removeLayer(layer); }catch(_){} });
+        radarLayers=[];
+      }
+    } catch(_) {}
+    radarBufferLayers.forEach(layer=>{ try{ if(map?.hasLayer(layer)) map.removeLayer(layer); }catch(_){} });
+    radarBufferLayers=[];
+  }
+
+  function createRadarBuffer(url, opacity){
+    return L.tileLayer(url,{
+      tileSize:256,
+      opacity,
+      zIndex:5,
+      maxNativeZoom:7,
+      maxZoom:7,
+      keepBuffer:2,
+      updateWhenIdle:false,
+      updateWhenZooming:false,
+      attribution:'RainViewer'
+    }).addTo(map);
+  }
+
+  function installStableRadarEngine(){
+    if(typeof L==='undefined' || typeof map==='undefined' || !map) return;
+
+    try { if(typeof stopRadarPlay==='function') stopRadarPlay(); } catch(_) {}
+    removeAllRadarLayers();
+
+    try {
+      clearRadarLayers = removeAllRadarLayers;
+      buildRadarLayers = function(){
+        removeAllRadarLayers();
+        if(typeof radarFrames==='undefined' || !radarFrames.length || !map) return;
+        const current=Math.max(0,Math.min(typeof radarIndex==='number'?radarIndex:radarFrames.length-1,radarFrames.length-1));
+        radarBufferLayers=[
+          createRadarBuffer(radarUrl(radarFrames[current]),.72),
+          createRadarBuffer(radarUrl(radarFrames[current]),0)
+        ];
+        activeRadarBuffer=0;
+        radarLayers=radarBufferLayers;
+      };
+
+      showRadarFrame = function(i,keepPlaying=false){
+        if(typeof radarFrames==='undefined' || !radarFrames.length || !map) return;
+        radarIndex=Math.max(0,Math.min(i,radarFrames.length-1));
+        const f=radarFrames[radarIndex];
+        const slider=$('radarSlider');
+        if(slider) slider.value=radarIndex;
+        const stamp=new Date(f.time*1000).toLocaleString('pt-BR',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'});
+        const time=$('radarTime');
+        if(time) time.textContent=radarIndex===radarFrames.length-1?stamp+' · mais recente':stamp;
+
+        if(radarBufferLayers.length!==2) buildRadarLayers();
+        if(radarBufferLayers.length!==2) return;
+
+        const token=++radarSwitchToken;
+        const nextBuffer=activeRadarBuffer===0?1:0;
+        const incoming=radarBufferLayers[nextBuffer];
+        const outgoing=radarBufferLayers[activeRadarBuffer];
+        incoming.setOpacity(0);
+        incoming.off('load');
+        incoming.once('load',()=>{
+          if(token!==radarSwitchToken) return;
+          incoming.setOpacity(.72);
+          outgoing.setOpacity(0);
+          activeRadarBuffer=nextBuffer;
+        });
+        incoming.setUrl(radarUrl(f),false);
+
+        setTimeout(()=>{
+          if(token!==radarSwitchToken) return;
+          if(activeRadarBuffer!==nextBuffer){
+            incoming.setOpacity(.72);
+            outgoing.setOpacity(0);
+            activeRadarBuffer=nextBuffer;
+          }
+        },900);
+
+        if(!keepPlaying) stopVisualRadar();
+      };
+    } catch(err){ console.warn('Radar estável',err); }
+
+    invalidateRadarMap();
+  }
+
   function stopVisualRadar(){
-    if(visualRadarTimer) clearInterval(visualRadarTimer);
+    if(visualRadarTimer) clearTimeout(visualRadarTimer);
     visualRadarTimer=null;
     const btn=$('radarPlay');
     if(btn) btn.textContent='▶ Animar';
+  }
+
+  function scheduleVisualRadar(){
+    if(!visualRadarTimer) return;
+    const atEnd=radarIndex>=radarFrames.length-1;
+    const delay=Math.max(550,Number(typeof radarDelay!=='undefined'?radarDelay:850)||850);
+    visualRadarTimer=setTimeout(()=>{
+      if(document.hidden){ scheduleVisualRadar(); return; }
+      const next=atEnd?0:radarIndex+1;
+      showRadarFrame(next,true);
+      scheduleVisualRadar();
+    },atEnd?Math.max(1500,delay*1.7):delay);
   }
 
   function startVisualRadar(){
@@ -108,13 +227,10 @@
     if(radarIndex>=radarFrames.length-1) showRadarFrame(0,true);
     const btn=$('radarPlay');
     if(btn) btn.textContent='⏸ Pausar';
-    const delay=Math.max(500,Number(typeof radarDelay!=='undefined'?radarDelay:850)||850);
-    visualRadarTimer=setInterval(()=>{
-      if(document.hidden) return;
-      if(typeof radarFrames==='undefined' || radarFrames.length<2) return;
-      const next=radarIndex>=radarFrames.length-1?0:radarIndex+1;
-      showRadarFrame(next,true);
-    },delay);
+    visualRadarTimer=setTimeout(()=>{
+      showRadarFrame(radarIndex>=radarFrames.length-1?0:radarIndex+1,true);
+      scheduleVisualRadar();
+    },Math.max(550,Number(typeof radarDelay!=='undefined'?radarDelay:850)||850));
   }
 
   function installRadarControls(){
@@ -127,6 +243,20 @@
       if(visualRadarTimer) stopVisualRadar(); else startVisualRadar();
     },true);
 
+    $('radarPrev')?.addEventListener('click',e=>{
+      e.preventDefault(); e.stopImmediatePropagation(); stopVisualRadar();
+      showRadarFrame(Math.max(0,radarIndex-1),true);
+    },true);
+
+    $('radarNext')?.addEventListener('click',e=>{
+      e.preventDefault(); e.stopImmediatePropagation(); stopVisualRadar();
+      showRadarFrame(Math.min(radarFrames.length-1,radarIndex+1),true);
+    },true);
+
+    $('radarSlider')?.addEventListener('input',e=>{
+      e.stopImmediatePropagation(); stopVisualRadar(); showRadarFrame(Number(e.target.value),true);
+    },true);
+
     $('radarSpeed')?.addEventListener('change',()=>{
       if(!visualRadarTimer) return;
       stopVisualRadar();
@@ -134,68 +264,9 @@
     },true);
 
     document.addEventListener('visibilitychange',()=>{
-      if(document.hidden) return;
-      try { if(typeof map!=='undefined' && map) setTimeout(()=>map.invalidateSize({pan:false,animate:false}),80); } catch(_) {}
+      if(document.hidden) stopVisualRadar();
+      else invalidateRadarMap();
     });
-  }
-
-  function createStableLeafletMap(){
-    const mapEl=$('map');
-    if(!mapEl || typeof L==='undefined' || typeof currentCity==='undefined' || !currentCity) return false;
-
-    map=L.map(mapEl,{
-      zoomControl:true,
-      preferCanvas:true,
-      zoomAnimation:false,
-      fadeAnimation:false,
-      markerZoomAnimation:false,
-      inertia:false,
-      trackResize:true
-    }).setView([currentCity.lat,currentCity.lon],7,{animate:false});
-
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
-      maxZoom:19,
-      updateWhenIdle:true,
-      updateWhenZooming:false,
-      keepBuffer:1,
-      attribution:'© OpenStreetMap'
-    }).addTo(map);
-
-    cityMarker=L.circleMarker([currentCity.lat,currentCity.lon],{
-      radius:7,weight:2,color:'#ffffff',fillColor:'#1977e9',fillOpacity:1
-    }).addTo(map).bindTooltip(currentCity.name);
-
-    requestAnimationFrame(()=>map.invalidateSize({pan:false,animate:false}));
-    setTimeout(()=>map.invalidateSize({pan:false,animate:false}),180);
-    setTimeout(()=>map.invalidateSize({pan:false,animate:false}),650);
-    if(typeof loadRadar==='function') loadRadar();
-    return true;
-  }
-
-  function rebuildRadarMap(){
-    if(radarRebuilt || !radarMoved) return;
-    try {
-      if(typeof L==='undefined' || typeof map==='undefined') return;
-      radarRebuilt=true;
-      stopVisualRadar();
-      try { if(typeof stopRadarPlay==='function') stopRadarPlay(); } catch(_) {}
-      try { if(map) map.remove(); } catch(_) {}
-      map=null;
-      try { cityMarker=null; } catch(_) {}
-      try { radarLayers=[]; radarFrames=[]; radarIndex=0; } catch(_) {}
-      const mapEl=$('map');
-      if(mapEl){
-        mapEl.innerHTML='';
-        mapEl.className='';
-        if(mapEl._leaflet_id) delete mapEl._leaflet_id;
-      }
-      requestAnimationFrame(()=>{
-        if(!createStableLeafletMap()) radarRebuilt=false;
-      });
-    } catch(err){
-      console.warn('Reconstrução do radar V6',err);
-      radarRebuilt=false;
-    }
   }
 
   function installResizeGuard(){
@@ -203,8 +274,11 @@
     if(!card || card.dataset.resizeGuard) return;
     card.dataset.resizeGuard='1';
     if('ResizeObserver' in window){
+      let pending=false;
       const ro=new ResizeObserver(()=>{
-        try { if(typeof map!=='undefined' && map) map.invalidateSize({pan:false,animate:false}); } catch(_) {}
+        if(pending) return;
+        pending=true;
+        requestAnimationFrame(()=>{ pending=false; invalidateRadarMap(); });
       });
       ro.observe(card);
     }
@@ -221,16 +295,20 @@
     updateModelBars();
     improveRadarHeader();
     installRadarControls();
-    rebuildRadarMap();
     installResizeGuard();
   }
 
-  const observer=new MutationObserver(()=>requestAnimationFrame(apply));
   const boot=()=>{
     apply();
+    setTimeout(()=>{
+      installStableRadarEngine();
+      try { if(typeof loadRadar==='function') loadRadar(); } catch(_) {}
+    },700);
+    setTimeout(invalidateRadarMap,1400);
+    const observer=new MutationObserver(()=>requestAnimationFrame(apply));
     observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
-    setInterval(apply,1200);
   };
+
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
   else boot();
 })();
