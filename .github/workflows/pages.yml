@@ -51,10 +51,10 @@ jobs:
           grep -q 'Análise numérica V5' site/index.html
           grep -q './visual.css' site/index.html
           grep -q './visual.js' site/index.html
-          grep -q 'radar-gm-v12-own-radar' site/sw.js
-          grep -q 'installCanvasRadar' site/visual.js
-          grep -q 'renderCanvasFrame' site/visual.js
-          grep -q "createElement('canvas')" site/visual.js
+          grep -q 'radar-gm-v13-dom-radar' site/sw.js
+          grep -q 'installOwnRadar' site/visual.js
+          grep -q 'renderOwnRadarFrame' site/visual.js
+          grep -q 'own-radar-tile' site/visual.js
           grep -q 'Nosso radar em tempo real' site/visual.js
           grep -q 'Validar no SIGMA' site/visual.js
       - name: Enviar site
