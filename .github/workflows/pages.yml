@@ -39,6 +39,7 @@ jobs:
           test -f site/v5.js
           test -f site/visual.js
           test -f site/visual.css
+          test -f site/zoom.js
           test -f site/data/guardamor/v5.json
           test -f scripts/collect_v5.py
           test -f scripts/install_v5.py
@@ -47,17 +48,21 @@ jobs:
           node --check site/v4.js
           node --check site/v5.js
           node --check site/visual.js
+          node --check site/zoom.js
           python -m py_compile scripts/collect_v5.py scripts/install_v5.py
           grep -q 'Análise numérica V5' site/index.html
           grep -q './visual.css' site/index.html
           grep -q './visual.js' site/index.html
-          grep -q 'radar-gm-v14-osm-basemap' site/sw.js
+          grep -q './zoom.js' site/index.html
+          grep -q 'radar-gm-v15-radar-zoom' site/sw.js
           grep -q 'tile.openstreetmap.org' site/sw.js
           grep -q 'installOwnRadar' site/visual.js
           grep -q 'renderOwnRadarFrame' site/visual.js
           grep -q 'own-radar-tile' site/visual.js
           grep -q 'Nosso radar em tempo real' site/visual.js
           grep -q 'Validar no SIGMA' site/visual.js
+          grep -q 'radarZoomIn' site/zoom.js
+          grep -q 'radarZoomOut' site/zoom.js
       - name: Enviar site
         uses: actions/upload-pages-artifact@v3
         with:
