@@ -16,11 +16,73 @@
   }
 
   function classifySections(){
-    const mapEl=$('map')?.closest('section'); if(mapEl) mapEl.classList.add('visual-radar-section');
+    const mapEl=$('map')?.closest('section'); if(mapEl) mapEl.classList.add('visual-radar-section','own-radar-section');
     const now=$('tempNow')?.closest('section'); if(now) now.classList.add('visual-now-section');
     const next=$('rain6')?.closest('section'); if(next) next.classList.add('visual-next-section');
     const models=$('models')?.closest('section'); if(models) models.classList.add('visual-model-section');
     const cities=$('cityOverview')?.closest('section'); if(cities) cities.classList.add('visual-city-section');
+  }
+
+  function makeOwnRadarPrimary(){
+    const radar=$('map')?.closest('section');
+    const official=document.querySelector('.official-card');
+    if(radar && official && official.nextElementSibling!==radar){
+      official.insertAdjacentElement('afterend',radar);
+    }
+
+    const title=radar?.querySelector('.section-title h2');
+    if(title) title.textContent='Nosso radar em tempo real';
+
+    const card=radar?.querySelector('.radar-card');
+    if(card && !document.getElementById('ownRadarIdentity')){
+      const identity=document.createElement('div');
+      identity.id='ownRadarIdentity';
+      identity.className='own-radar-identity';
+      identity.innerHTML='<div><strong>RADAR GUARDA-MOR</strong><span>visualização própria dentro do aplicativo</span></div><span class="own-radar-live">● AO VIVO</span>';
+      card.insertBefore(identity,card.firstChild);
+    }
+
+    const source=card?.querySelector('.source-note');
+    if(source) source.textContent='Radar próprio do aplicativo: mapa e animação renderizados aqui. Dados de precipitação: RainViewer. SIGMA/FORTRACC ficam apenas como validação oficial opcional.';
+
+    const cptec=$('cptecPanel');
+    const cptecTitle=cptec?.querySelector('.section-title h2');
+    if(cptecTitle) cptecTitle.textContent='Validação oficial (opcional)';
+    const sigma=$('cptecRadarLink');
+    const fortracc=$('cptecFortraccLink');
+    const satellite=$('cptecSigmaLink');
+    if(sigma){
+      const strong=sigma.querySelector('strong'); const span=sigma.querySelector('span');
+      if(strong) strong.textContent='Validar no SIGMA';
+      if(span) span.textContent='abre o radar oficial';
+    }
+    if(fortracc){
+      const strong=fortracc.querySelector('strong'); const span=fortracc.querySelector('span');
+      if(strong) strong.textContent='Validar no FORTRACC';
+      if(span) span.textContent='trajetória oficial 0–120 min';
+    }
+    if(satellite){
+      const strong=satellite.querySelector('strong'); const span=satellite.querySelector('span');
+      if(strong) strong.textContent='Satélite oficial';
+      if(span) span.textContent='consulta complementar';
+    }
+
+    if(!document.getElementById('ownRadarStyles')){
+      const style=document.createElement('style');
+      style.id='ownRadarStyles';
+      style.textContent=`
+        .own-radar-section{margin-top:2px}
+        .own-radar-section .radar-card{overflow:hidden}
+        .own-radar-identity{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;background:linear-gradient(90deg,rgba(7,35,59,.98),rgba(7,27,47,.92));border-bottom:1px solid rgba(51,191,255,.22)}
+        .own-radar-identity strong{display:block;font-size:11px;letter-spacing:.8px;color:#dff7ff}
+        .own-radar-identity span{display:block;font-size:9px;color:#82a9c2;margin-top:2px}
+        .own-radar-identity .own-radar-live{margin:0;color:#66e9c1;font-size:9px;font-weight:900;letter-spacing:.5px;white-space:nowrap}
+        .own-radar-section #map{cursor:default}
+        #cptecPanel{opacity:.92}
+        #cptecPanel .cptec-link strong{font-size:11px}
+      `;
+      document.head.appendChild(style);
+    }
   }
 
   function updateRiskGauge(){
@@ -48,11 +110,6 @@
     });
   }
 
-  function improveRadarHeader(){
-    const title=$('map')?.closest('section')?.querySelector('.section-title h2');
-    if(title) title.textContent='Radar em tempo real';
-  }
-
   function mercatorTile(lat, lon, z){
     const n=2**z;
     const x=(lon+180)/360*n;
@@ -67,11 +124,13 @@
     const p=new Promise(resolve=>{
       const img=new Image();
       img.decoding='async';
+      img.crossOrigin='anonymous';
       img.onload=()=>resolve(img);
       img.onerror=()=>{
         if(!fallback){ resolve(null); return; }
         const img2=new Image();
         img2.decoding='async';
+        img2.crossOrigin='anonymous';
         img2.onload=()=>resolve(img2);
         img2.onerror=()=>resolve(null);
         img2.src=fallback;
@@ -124,7 +183,7 @@
         const sub='abcd'[(nx+ty)%4];
         const carto=`https://${sub}.basemaps.cartocdn.com/light_all/${ZOOM}/${nx}/${ty}.png`;
         const osm=`https://tile.openstreetmap.org/${ZOOM}/${nx}/${ty}.png`;
-        jobs.push(loadImage(carto,osm).then(img=>({img,dx,dy,nx,ty})));
+        jobs.push(loadImage(carto,osm).then(img=>({img,dx,dy})));
       }
     }
     const base=await Promise.all(jobs);
@@ -155,12 +214,20 @@
     }
 
     const cx=b.cssW/2, cy=b.cssH/2;
-    ctx.beginPath(); ctx.arc(cx,cy,6,0,Math.PI*2); ctx.fillStyle='#1977e9'; ctx.fill();
+    ctx.beginPath(); ctx.arc(cx,cy,7,0,Math.PI*2); ctx.fillStyle='#14a9ff'; ctx.fill();
     ctx.lineWidth=2; ctx.strokeStyle='#fff'; ctx.stroke();
+    ctx.font='600 11px -apple-system,BlinkMacSystemFont,sans-serif';
+    ctx.textAlign='center';
+    ctx.fillStyle='rgba(5,20,35,.86)';
+    const label=city.name || 'Guarda-Mor';
+    const metrics=ctx.measureText(label);
+    ctx.fillRect(cx-metrics.width/2-6,cy+11,metrics.width+12,18);
+    ctx.fillStyle='#fff';
+    ctx.fillText(label,cx,cy+24);
   }
 
   async function canvasLoadRadar(){
-    const time=$('radarTime'); if(time) time.textContent='atualizando radar…';
+    const time=$('radarTime'); if(time) time.textContent='atualizando nosso radar…';
     try{
       const j=await fetchJSON('https://api.rainviewer.com/public/weather-maps.json',10000);
       radarFrames=(j.radar?.past||[]).map(f=>({...f,host:j.host}));
@@ -173,7 +240,10 @@
       if($('radarEnd')) $('radarEnd').textContent=new Date(radarFrames.at(-1).time*1000).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+' · mais recente';
       await renderCanvasFrame(canvasIndex);
       prefetchAdjacent();
-    }catch(e){ console.warn('Radar Canvas',e); if(time) time.textContent='radar temporariamente indisponível'; }
+    }catch(e){
+      console.warn('Radar próprio',e);
+      if(time) time.textContent='nosso radar temporariamente indisponível';
+    }
   }
 
   function prefetchAdjacent(){
@@ -230,11 +300,13 @@
     host.innerHTML='';
     host.style.position='relative';
     host.style.overflow='hidden';
+    host.removeAttribute('onclick');
     canvas=document.createElement('canvas');
-    canvas.setAttribute('aria-label','Radar meteorológico observado');
+    canvas.setAttribute('aria-label','Radar Guarda-Mor — precipitação observada');
     canvas.style.display='block';
     canvas.style.width='100%';
     canvas.style.height='100%';
+    canvas.style.pointerEvents='none';
     host.appendChild(canvas);
     canvasReady=true;
 
@@ -251,14 +323,19 @@
     intercept('radarNext',()=>{stopCanvas();canvasIndex=Math.min((radarFrames?.length||1)-1,canvasIndex+1);radarIndex=canvasIndex;renderCanvasFrame(canvasIndex);});
     $('radarSlider')?.addEventListener('input',e=>{e.stopImmediatePropagation();stopCanvas();canvasIndex=Number(e.target.value);radarIndex=canvasIndex;renderCanvasFrame(canvasIndex);},true);
     $('radarSpeed')?.addEventListener('change',e=>{canvasDelay=Number(e.target.value)||850;if(canvasTimer){stopCanvas();startCanvas();}},true);
-    new ResizeObserver(()=>renderCanvasFrame(canvasIndex)).observe(host);
+    if('ResizeObserver' in window) new ResizeObserver(()=>renderCanvasFrame(canvasIndex)).observe(host);
     setInterval(canvasLoadRadar,10*60*1000);
     canvasLoadRadar();
   }
 
   function apply(){
     document.body.classList.add('visual-v6');
-    setMetricIcons(); classifySections(); updateRiskGauge(); updateV4Bars(); updateModelBars(); improveRadarHeader();
+    setMetricIcons();
+    classifySections();
+    makeOwnRadarPrimary();
+    updateRiskGauge();
+    updateV4Bars();
+    updateModelBars();
   }
 
   const boot=()=>{
@@ -266,6 +343,7 @@
     document.getElementById('radarCriticalIsolation')?.remove();
     apply();
     installCanvasRadar();
+    setTimeout(()=>renderCanvasFrame(canvasIndex),350);
     const observer=new MutationObserver(()=>requestAnimationFrame(apply));
     observer.observe(document.body,{subtree:true,childList:true});
   };
