@@ -1,6 +1,7 @@
 (() => {
   const $ = id => document.getElementById(id);
   const clamp = (v,a=0,b=100) => Math.max(a,Math.min(b,Number(v)||0));
+  let baseMapReplaced = false;
 
   function setMetricIcons(){
     const icons={tempNow:'🌡️',humidityNow:'💧',windNow:'💨',gustNow:'🌬️',rain6:'🌧️',gust6:'💨',cape6:'⚡',dew6:'💧'};
@@ -23,8 +24,6 @@
     const level=Number($('riskLevel')?.textContent);
     if(!badge || !Number.isFinite(level)) return;
     badge.style.setProperty('--gauge-pct',`${clamp(level/4*100)}%`);
-    const eyebrow=document.querySelector('.risk-copy .eyebrow');
-    if(eyebrow && eyebrow.textContent!=='RISCO NUMÉRICO V5 • 6 H') eyebrow.textContent='RISCO NUMÉRICO V5 • 6 H';
   }
 
   function updateV4Bars(){
@@ -34,8 +33,6 @@
       const card=$(id)?.closest('.v4-index');
       if(card && Number.isFinite(value)) card.style.setProperty('--visual-pct',clamp(value));
     });
-    const title=$('v4Panel')?.querySelector('.section-title h2');
-    if(title && title.textContent!=='Análise numérica V5') title.textContent='Análise numérica V5';
   }
 
   function updateModelBars(){
@@ -54,15 +51,35 @@
   function improveRadarHeader(){
     const radar=$('map')?.closest('section');
     const title=radar?.querySelector('.section-title h2');
-    if(title && title.textContent!=='Radar em tempo real') title.textContent='Radar em tempo real';
+    if(title) title.textContent='Radar em tempo real';
   }
 
-  function safeInvalidateRadar(){
+  function replaceBaseMap(){
+    if(baseMapReplaced) return;
     try {
-      if(typeof map!=='undefined' && map){
-        requestAnimationFrame(()=>map.invalidateSize({pan:false,animate:false}));
-      }
-    } catch(_) {}
+      if(typeof map==='undefined' || !map || typeof L==='undefined') return;
+      const remove=[];
+      map.eachLayer(layer=>{
+        if(!(layer instanceof L.TileLayer)) return;
+        const attribution=String(layer.options?.attribution||'');
+        if(/OpenStreetMap/i.test(attribution) && !/RainViewer/i.test(attribution)) remove.push(layer);
+      });
+      remove.forEach(layer=>map.removeLayer(layer));
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+        subdomains:'abcd',
+        maxZoom:20,
+        updateWhenIdle:false,
+        updateWhenZooming:false,
+        keepBuffer:4,
+        crossOrigin:true,
+        attribution:'&copy; OpenStreetMap contributors &copy; CARTO'
+      }).addTo(map).bringToBack();
+      baseMapReplaced=true;
+      requestAnimationFrame(()=>map.invalidateSize({pan:false,animate:false}));
+      setTimeout(()=>map.invalidateSize({pan:false,animate:false}),250);
+    } catch(err){
+      console.warn('Mapa base alternativo',err);
+    }
   }
 
   function apply(){
@@ -73,16 +90,15 @@
     updateV4Bars();
     updateModelBars();
     improveRadarHeader();
+    replaceBaseMap();
   }
 
   const boot=()=>{
-    // Importante: este script não move, recria, isola nem intercepta o radar.
-    // O Leaflet e o player ficam sob controle exclusivo de app.js.
     document.getElementById('radarFixCss')?.remove();
     document.getElementById('radarCriticalIsolation')?.remove();
     apply();
-    setTimeout(safeInvalidateRadar,250);
-    setTimeout(safeInvalidateRadar,900);
+    setTimeout(replaceBaseMap,350);
+    setTimeout(replaceBaseMap,1000);
     const observer=new MutationObserver(()=>requestAnimationFrame(apply));
     observer.observe(document.body,{subtree:true,childList:true});
   };
