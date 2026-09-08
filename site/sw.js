@@ -1,6 +1,6 @@
-const CACHE = 'radar-gm-v14-osm-basemap';
+const CACHE = 'radar-gm-v15-radar-zoom';
 const SHELL = [
-  './', './index.html', './styles.css', './v4.css', './visual.css', './app.js', './cptec.js', './v4.js', './v5.js', './visual.js', './data/guardamor/v5.json', './manifest.webmanifest',
+  './', './index.html', './styles.css', './v4.css', './visual.css', './app.js', './cptec.js', './v4.js', './v5.js', './visual.js', './zoom.js', './data/guardamor/v5.json', './manifest.webmanifest',
   './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png'
 ];
 
