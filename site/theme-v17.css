@@ -1,0 +1,258 @@
+:root{
+  --v17-cyan:#19d7ff;
+  --v17-blue:#1877ff;
+  --v17-indigo:#4c4cff;
+  --v17-violet:#9b43ff;
+  --v17-amber:#ffbd32;
+  --v17-orange:#ff7b16;
+  --v17-green:#44efa2;
+  --v17-deep:#031427;
+  --v17-panel:#082744;
+}
+
+/* Camada visual V17: somente apresentacao; nenhuma regra altera a logica do radar. */
+body.visual-v6{
+  background:
+    radial-gradient(circle at 50% -5%,rgba(16,118,218,.38),transparent 31%),
+    radial-gradient(circle at 8% 34%,rgba(0,209,255,.13),transparent 23%),
+    radial-gradient(circle at 94% 46%,rgba(117,55,255,.12),transparent 24%),
+    linear-gradient(180deg,#06274a 0%,#041a33 39%,#020d1b 100%);
+}
+body.visual-v6::before{
+  height:270px;
+  background:
+    linear-gradient(180deg,rgba(0,31,64,.02),rgba(2,15,29,.83)),
+    radial-gradient(circle at 76% 24%,rgba(41,184,255,.34),transparent 17%),
+    radial-gradient(circle at 87% 14%,rgba(89,95,255,.20),transparent 20%),
+    linear-gradient(130deg,rgba(8,75,132,.82),rgba(5,22,42,.55));
+  filter:saturate(1.35);
+}
+
+.visual-v6 .glass{
+  background:linear-gradient(145deg,rgba(11,49,82,.94),rgba(5,25,46,.92));
+  border-color:rgba(54,197,255,.28);
+  box-shadow:0 18px 46px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.055),0 0 30px rgba(10,152,255,.05);
+}
+
+/* Cabecalho premium azul/ciano */
+.visual-v6 .topbar{
+  min-height:132px;
+  padding:22px 15px 16px;
+  border-radius:28px;
+  background:
+    linear-gradient(90deg,rgba(2,27,54,.98) 0%,rgba(7,45,88,.88) 56%,rgba(16,74,142,.64) 100%),
+    radial-gradient(circle at 80% 31%,rgba(76,194,255,.42),transparent 26%),
+    linear-gradient(140deg,#073b6f,#051d3b 58%,#0a4d82);
+  border:1px solid rgba(31,211,255,.60);
+  box-shadow:0 14px 36px rgba(0,0,0,.30),0 0 28px rgba(0,193,255,.13),inset 0 0 35px rgba(27,157,255,.06);
+}
+.visual-v6 .topbar::before{
+  content:"☁️";
+  right:56px;top:6px;font-size:88px;opacity:.19;
+  filter:drop-shadow(0 0 20px rgba(95,194,255,.25));
+}
+.visual-v6 .topbar::after{
+  content:"⚡";
+  right:88px;top:35px;font-size:54px;color:#52ecff;opacity:.88;
+  text-shadow:0 0 12px #1fd8ff,0 0 30px rgba(44,162,255,.9);
+}
+.visual-v6 .topbar h1{font-size:34px;text-shadow:0 3px 18px rgba(0,0,0,.25)}
+.visual-v6 .topbar .eyebrow{color:#42ddff;text-shadow:0 0 10px rgba(20,210,255,.35)}
+.visual-v6 .topbar .muted{color:#d3e7f6}
+.visual-v6 .icon-btn{
+  width:54px;min-width:54px;height:54px;border-radius:18px;
+  background:linear-gradient(145deg,rgba(11,58,111,.92),rgba(4,25,52,.88));
+  border-color:rgba(49,219,255,.70);
+  box-shadow:0 0 22px rgba(0,196,255,.20),inset 0 0 16px rgba(38,143,255,.08);
+}
+
+/* Cidade monitorada */
+.visual-v6 .city-panel{
+  padding:13px;border-radius:20px;
+  background:linear-gradient(145deg,rgba(8,42,75,.94),rgba(4,24,45,.93));
+  border-color:rgba(44,191,255,.32);
+}
+.visual-v6 #citySelect{
+  height:48px;border-radius:15px;
+  background:linear-gradient(180deg,rgba(3,24,49,.98),rgba(4,34,65,.96));
+  border-color:rgba(56,188,255,.42);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);
+}
+.visual-v6 .square-btn{
+  width:48px;min-width:48px;height:48px;border-radius:15px;
+  background:linear-gradient(145deg,rgba(20,67,112,.90),rgba(8,34,65,.94));
+  border-color:rgba(69,175,255,.33);
+}
+.visual-v6 #favoriteBtn{color:#ffd43b}
+.visual-v6 #favoriteBtn.is-favorite{
+  background:linear-gradient(145deg,rgba(112,78,9,.90),rgba(58,43,12,.96));
+  border-color:rgba(255,197,48,.72);
+  box-shadow:0 0 20px rgba(255,183,0,.16);
+}
+.visual-v6 #addCityBtn{
+  background:linear-gradient(145deg,#176bdc,#3d3df1);
+  border-color:rgba(83,202,255,.52);
+  box-shadow:0 0 18px rgba(48,81,255,.20);
+}
+
+/* Cartao de risco - amber/orange com contraste alto */
+.visual-v6 .risk-card{
+  border-radius:28px;padding:20px;margin-bottom:12px;
+  background:
+    radial-gradient(circle at 91% 74%,rgba(255,139,34,.25),transparent 25%),
+    linear-gradient(120deg,rgba(86,48,5,.96),rgba(131,60,4,.78) 49%,rgba(35,27,72,.94) 100%);
+  border:1px solid rgba(255,181,45,.86);
+  box-shadow:0 18px 44px rgba(0,0,0,.30),0 0 28px rgba(255,137,0,.13),inset 0 0 55px rgba(255,153,0,.055);
+}
+.visual-v6 .risk-card::after{
+  content:"⛈️";right:10px;bottom:-13px;font-size:112px;opacity:.20;
+  filter:drop-shadow(0 0 22px rgba(255,146,37,.18));
+}
+.visual-v6 .risk-badge{
+  width:100px;height:100px;
+  box-shadow:0 0 12px rgba(54,240,148,.60),0 0 30px rgba(54,240,148,.20);
+}
+.visual-v6 .risk-badge::before{inset:10px;background:radial-gradient(circle at 35% 25%,#0c2d4f,#031426 76%)}
+.visual-v6 .risk-copy .eyebrow{color:#ffd05c;text-shadow:0 0 12px rgba(255,169,35,.24)}
+.visual-v6 .risk-copy h2{color:#ffe29a;font-size:29px;text-shadow:0 2px 12px rgba(70,31,0,.35)}
+.visual-v6 .risk-summary{color:#fff4e2}
+.visual-v6 .chip{
+  padding:6px 10px;
+  border-color:rgba(255,184,47,.58);
+  background:linear-gradient(180deg,rgba(137,72,0,.35),rgba(75,40,0,.25));
+  color:#ffe3a7;
+  box-shadow:inset 0 0 10px rgba(255,160,0,.035);
+}
+
+/* Avisos oficiais em roxo/azul */
+.visual-v6 .official-card{
+  position:relative;overflow:hidden;
+  margin:0 0 20px;padding:14px 15px;
+  border:1px solid rgba(130,78,255,.60);
+  border-left:4px solid #b144ff;
+  border-radius:17px;
+  background:linear-gradient(120deg,rgba(84,23,154,.62),rgba(29,39,123,.86) 58%,rgba(9,47,89,.94));
+  box-shadow:0 12px 28px rgba(0,0,0,.22),0 0 24px rgba(130,56,255,.10);
+}
+.visual-v6 .official-card::before{
+  content:"📣";font-size:25px;margin-right:9px;filter:drop-shadow(0 0 8px rgba(202,84,255,.45));
+}
+.visual-v6 .official-card strong{font-size:13px;color:#fff}
+.visual-v6 .official-card p{color:#e4e8ff}
+.visual-v6 .official-card a{
+  color:#fff;border-color:rgba(49,220,255,.62);
+  background:linear-gradient(135deg,rgba(67,57,255,.62),rgba(0,123,255,.50));
+  padding:9px 12px;border-radius:12px;
+  box-shadow:0 0 16px rgba(29,172,255,.16);
+}
+
+/* Titulos */
+.visual-v6 .section-title h2{color:#f5fbff;font-weight:800}
+.visual-v6 .visual-radar-section>.section-title h2::before{
+  color:#35e8ff;text-shadow:0 0 14px rgba(35,220,255,.85);
+}
+.visual-v6 .visual-radar-section>.section-title .muted{color:#8fc7e9}
+
+/* Nosso radar */
+.visual-v6 .radar-card{
+  border-radius:24px;
+  background:linear-gradient(180deg,rgba(5,39,72,.98),rgba(3,22,43,.98));
+  border:1px solid rgba(32,211,255,.70);
+  box-shadow:0 15px 40px rgba(0,0,0,.34),0 0 28px rgba(0,188,255,.12),inset 0 1px 0 rgba(255,255,255,.04);
+}
+.visual-v6 #map{
+  border-bottom:1px solid rgba(53,217,255,.28);
+  box-shadow:inset 0 0 0 1px rgba(22,206,255,.05);
+}
+.visual-v6 .radar-timeline-labels{color:#9bd6f7}
+.visual-v6 .radar-slider{accent-color:#21ddff;filter:drop-shadow(0 0 4px rgba(0,198,255,.28))}
+.visual-v6 .radar-controls{
+  background:linear-gradient(180deg,rgba(4,34,65,.70),rgba(2,20,39,.98));
+}
+.visual-v6 .small-btn{
+  border-color:rgba(71,179,236,.32);
+  background:linear-gradient(145deg,rgba(18,62,98,.86),rgba(6,31,56,.94));
+}
+.visual-v6 .radar-play{
+  background:linear-gradient(180deg,#16b9ff,#0875ec);
+  border-color:#4ce6ff;
+  box-shadow:0 0 18px rgba(14,185,255,.24);
+}
+.visual-v6 .radar-speed select{border-color:rgba(62,183,240,.32);background:#071d35}
+.visual-v6 .source-note{color:#9bb9cf}
+
+/* Cards de dados com cores mais vivas */
+.visual-v6 .metric{
+  border-color:rgba(56,184,245,.28);
+  background:linear-gradient(145deg,rgba(10,57,96,.94),rgba(5,30,53,.94));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 10px 26px rgba(0,0,0,.16);
+}
+.visual-v6 .metric:nth-child(1){background:linear-gradient(145deg,rgba(88,39,69,.65),rgba(8,37,65,.94))}
+.visual-v6 .metric:nth-child(2){background:linear-gradient(145deg,rgba(7,77,104,.70),rgba(7,37,65,.94))}
+.visual-v6 .metric:nth-child(3){background:linear-gradient(145deg,rgba(6,82,86,.68),rgba(7,37,65,.94))}
+.visual-v6 .metric:nth-child(4){background:linear-gradient(145deg,rgba(47,46,112,.66),rgba(7,37,65,.94))}
+
+.visual-v6 .v4-panel{
+  background:linear-gradient(145deg,rgba(8,46,82,.96),rgba(7,29,55,.95));
+  border-color:rgba(44,199,255,.38);
+  box-shadow:0 14px 38px rgba(0,0,0,.24),0 0 26px rgba(14,155,255,.06);
+}
+.visual-v6 .v4-index:nth-child(1){background:linear-gradient(160deg,rgba(6,75,115,.82),rgba(3,23,43,.92))}
+.visual-v6 .v4-index:nth-child(2){background:linear-gradient(160deg,rgba(102,71,7,.54),rgba(3,23,43,.92))}
+.visual-v6 .v4-index:nth-child(3){background:linear-gradient(160deg,rgba(107,28,50,.55),rgba(3,23,43,.92))}
+.visual-v6 .v4-index:nth-child(4){background:linear-gradient(160deg,rgba(5,88,75,.52),rgba(3,23,43,.92))}
+
+.visual-v6 .model-card{
+  border-color:rgba(64,181,242,.27);
+  background:linear-gradient(145deg,rgba(9,48,81,.96),rgba(4,24,45,.94));
+}
+.visual-v6 .cptec-panel{
+  background:linear-gradient(145deg,rgba(7,50,88,.96),rgba(5,28,51,.95));
+  border-color:rgba(45,201,255,.42);
+}
+.visual-v6 .cptec-link{
+  background:linear-gradient(180deg,rgba(16,112,178,.30),rgba(5,38,67,.90));
+  border-color:rgba(57,208,255,.42);
+}
+.visual-v6 .city-card{
+  background:linear-gradient(145deg,rgba(8,50,83,.96),rgba(5,28,49,.94));
+  border-color:rgba(62,180,238,.28);
+}
+.visual-v6 .city-card.selected{
+  border-color:rgba(38,218,255,.74);
+  box-shadow:inset 0 0 0 1px rgba(37,202,255,.22),0 0 18px rgba(0,176,255,.10);
+}
+
+.visual-v6 .primary-btn{
+  background:linear-gradient(135deg,#12c9ff,#1365ff 62%,#5d42ff);
+  box-shadow:0 10px 26px rgba(23,103,255,.27),0 0 18px rgba(18,200,255,.10);
+}
+.visual-v6 .secondary-btn{
+  background:linear-gradient(145deg,rgba(22,62,102,.96),rgba(7,31,58,.96));
+  border-color:rgba(78,190,246,.36);
+}
+
+/* Anotacao rapida */
+.visual-v6 .quick-note{
+  background:linear-gradient(145deg,rgba(9,47,78,.94),rgba(5,26,47,.93));
+  border-color:rgba(51,196,255,.31);
+}
+.visual-v6 .rain-choice-btn.active{
+  background:linear-gradient(135deg,rgba(21,187,255,.38),rgba(26,104,255,.36));
+  border-color:rgba(67,221,255,.75);
+  box-shadow:0 0 16px rgba(18,190,255,.12);
+}
+
+@media(max-width:520px){
+  .visual-v6 .topbar{min-height:122px;padding:18px 11px 14px;border-radius:24px}
+  .visual-v6 .topbar h1{font-size:29px}
+  .visual-v6 .topbar::before{right:39px;font-size:70px}
+  .visual-v6 .topbar::after{right:67px;top:31px;font-size:44px}
+  .visual-v6 .icon-btn{width:48px;min-width:48px;height:48px;border-radius:16px}
+  .visual-v6 .risk-card{padding:17px;grid-template-columns:104px 1fr}
+  .visual-v6 .risk-badge{width:90px;height:90px}
+  .visual-v6 .risk-copy h2{font-size:26px}
+  .visual-v6 .official-card{padding:12px 11px}
+  .visual-v6 .official-card::before{font-size:21px;margin-right:5px}
+  .visual-v6 #map{height:350px}
+}
