@@ -27,6 +27,20 @@ jobs:
         uses: actions/configure-pages@v5
         with:
           enablement: true
+      - name: Aplicar tema V17
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('site/index.html')
+          s = p.read_text(encoding='utf-8')
+          needle = '  <link rel="stylesheet" href="./visual.css">\n'
+          theme = '  <link rel="stylesheet" href="./theme-v17.css">\n'
+          if theme not in s:
+              if needle not in s:
+                  raise SystemExit('visual.css não encontrado no index.html')
+              s = s.replace(needle, needle + theme, 1)
+              p.write_text(s, encoding='utf-8')
+          PY
       - name: Validar aplicativo
         run: |
           test -f site/index.html
@@ -39,6 +53,7 @@ jobs:
           test -f site/v5.js
           test -f site/visual.js
           test -f site/visual.css
+          test -f site/theme-v17.css
           test -f site/data/guardamor/v5.json
           test -f scripts/collect_v5.py
           test -f scripts/install_v5.py
@@ -50,8 +65,10 @@ jobs:
           python -m py_compile scripts/collect_v5.py scripts/install_v5.py
           grep -q 'Análise numérica V5' site/index.html
           grep -q './visual.css' site/index.html
+          grep -q './theme-v17.css' site/index.html
           grep -q './visual.js' site/index.html
-          grep -q 'radar-gm-v14-osm-basemap' site/sw.js
+          grep -q 'radar-gm-v17-colorful-ui' site/sw.js
+          grep -q 'theme-v17.css' site/sw.js
           grep -q 'tile.openstreetmap.org' site/sw.js
           grep -q 'installOwnRadar' site/visual.js
           grep -q 'renderOwnRadarFrame' site/visual.js
