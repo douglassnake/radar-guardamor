@@ -1,0 +1,6 @@
+{
+  "appId": "com.douglassnake.radarguardamor",
+  "appName": "Radar Guarda-Mor",
+  "webDir": "site",
+  "bundledWebRuntime": false
+}
