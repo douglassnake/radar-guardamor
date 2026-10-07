@@ -1,0 +1,24 @@
+{
+  "name": "radar-guardamor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Aplicativo móvel Radar Guarda-Mor",
+  "scripts": {
+    "native:sync": "cap sync",
+    "native:android:init": "cap add android",
+    "native:ios:init": "cap add ios",
+    "native:android:open": "cap open android",
+    "native:ios:open": "cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.2",
+    "@capacitor/core": "8.5.2",
+    "@capacitor/ios": "8.5.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.2"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
