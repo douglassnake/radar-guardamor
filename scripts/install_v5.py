@@ -32,26 +32,41 @@ if '/* V5: calibração persistente' not in text:
     text += css
 p.write_text(text,encoding='utf-8')
 
-# Atualiza shell/cache PWA preservando a camada visual V6 e o isolamento rígido do radar.
+# Atualiza o shell PWA sem rebaixar caches de interfaces mais recentes.
+# Versoes V5/V6 legadas ainda recebem os assets e cache de compatibilidade.
+# Na V17+, o cache e a lista SHELL sao propriedade da interface atual.
 p=Path('site/sw.js'); text=p.read_text(encoding='utf-8')
 visual = Path('site/visual.js').exists() and Path('site/visual.css').exists()
 radarfix = Path('site/radarfix.css').exists()
-cache_name = 'radar-gm-v6-radarfix3' if visual and radarfix else ('radar-gm-v6-visual' if visual else 'radar-gm-v5-calibracao')
-text=re.sub(r"const CACHE = '[^']+';",f"const CACHE = '{cache_name}';",text,count=1)
+
+match = re.search(r"const CACHE = '([^']+)';", text)
+if not match:
+    raise SystemExit('Nome de cache PWA nao reconhecido em sw.js')
+current_cache = match.group(1)
+legacy_cache = current_cache.startswith(('radar-gm-v5-', 'radar-gm-v6-'))
+cache_name = current_cache
 
 required = ["'./v5.js'", "'./data/guardamor/v5.json'"]
 if visual:
     required += ["'./visual.css'", "'./visual.js'"]
-if radarfix:
-    required += ["'./radarfix.css'"]
 
-for item in required:
-    if item in text:
-        continue
-    if "'./manifest.webmanifest'" not in text:
-        raise SystemExit('Lista SHELL não reconhecida em sw.js')
-    text=text.replace("'./manifest.webmanifest'",f"{item}, './manifest.webmanifest'",1)
+if legacy_cache:
+    cache_name = 'radar-gm-v6-radarfix3' if visual and radarfix else ('radar-gm-v6-visual' if visual else 'radar-gm-v5-calibracao')
+    text = text.replace(f"const CACHE = '{current_cache}';", f"const CACHE = '{cache_name}';", 1)
+    if radarfix:
+        required += ["'./radarfix.css'"]
 
-p.write_text(text,encoding='utf-8')
+    for item in required:
+        if item in text:
+            continue
+        if "'./manifest.webmanifest'" not in text:
+            raise SystemExit('Lista SHELL nao reconhecida em sw.js')
+        text = text.replace("'./manifest.webmanifest'", f"{item}, './manifest.webmanifest'", 1)
+else:
+    # Alterar cache mais moderno silenciosamente pode reativar assets antigos.
+    missing = [item for item in required if item not in text]
+    if missing:
+        raise SystemExit(f'Cache PWA moderno incompleto: {", ".join(missing)}')
 
+p.write_text(text, encoding='utf-8')
 print(f'V5 instalado/atualizado com sucesso • cache {cache_name}')
