@@ -53,10 +53,13 @@ jobs:
           grep -q './v5.js' site/sw.js
           grep -q './visual.js' site/sw.js
           grep -q './visual.css' site/sw.js
-          grep -q './radarfix.css' site/sw.js
-          grep -q 'radar-gm-v6-radarfix3' site/sw.js
-          grep -q 'rebuildRadarMap' site/visual.js
-          grep -q 'startVisualRadar' site/visual.js
+          # V17+ preserves its own cache; legacy V6 also remains supported.
+          grep -Eq "^const CACHE = 'radar-gm-v[0-9]+[^']*';" site/sw.js
+          # Validate current own-radar entrypoints, not retired V6 names.
+          grep -q 'function rebuildBase' site/visual.js
+          grep -q 'function installOwnRadar' site/visual.js
+          grep -q 'function renderOwnRadarFrame' site/visual.js
+          grep -q 'function ownLoadRadar' site/visual.js
           grep -q 'contain:layout paint' site/radarfix.css
       - name: Persistir historico e integracao
         run: |
