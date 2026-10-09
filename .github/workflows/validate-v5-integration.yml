@@ -1,0 +1,49 @@
+name: Validate V5 integration without deployment
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/install_v5.py'
+      - 'site/sw.js'
+      - 'site/visual.js'
+      - 'site/visual.css'
+      - 'site/radarfix.css'
+      - '.github/workflows/calibracao-v5.yml'
+      - '.github/workflows/validate-v5-integration.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  v5-static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate V5 code without fetching external weather data
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/install_v5.py scripts/collect_v5.py
+          SW_BEFORE="$(sha256sum site/sw.js | cut -d ' ' -f 1)"
+          python scripts/install_v5.py
+          SW_AFTER="$(sha256sum site/sw.js | cut -d ' ' -f 1)"
+          # The installer must never roll back V17's cache or shell.
+          test "$SW_BEFORE" = "$SW_AFTER"
+          python scripts/install_v5.py
+          SW_REPEAT="$(sha256sum site/sw.js | cut -d ' ' -f 1)"
+          test "$SW_AFTER" = "$SW_REPEAT"
+          node --check site/v4.js
+          node --check site/v5.js
+          node --check site/visual.js
+          test -f site/radarfix.css
+          grep -q './v5.js' site/index.html
+          grep -q './visual.js' site/index.html
+          grep -q './visual.css' site/index.html
+          grep -q './v5.js' site/sw.js
+          grep -q './visual.js' site/sw.js
+          grep -q './visual.css' site/sw.js
+          grep -q 'function rebuildBase' site/visual.js
+          grep -q 'function installOwnRadar' site/visual.js
+          grep -q 'function renderOwnRadarFrame' site/visual.js
+          grep -q 'function ownLoadRadar' site/visual.js
+          grep -q 'contain:layout paint' site/radarfix.css
