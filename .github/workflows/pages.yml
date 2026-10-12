@@ -69,7 +69,9 @@ jobs:
           grep -q './visual.js' site/index.html
           grep -q 'rain2hGrid' site/index.html
           grep -q 'rainNext2' site/app.js
-          grep -q 'radar-gm-v18-rain-2h' site/sw.js
+          grep -q 'numberValue' site/v4.js
+          grep -q 'lead_definition' scripts/collect_v5.py
+          grep -q 'radar-gm-v19-calculation-audit' site/sw.js
           grep -q 'theme-v17.css' site/sw.js
           grep -q 'tile.openstreetmap.org' site/sw.js
           grep -q 'installOwnRadar' site/visual.js
