@@ -80,9 +80,21 @@ function sum(values) {
   const a = values.filter(v => Number.isFinite(v));
   return a.length ? a.reduce((acc,v)=>acc+v,0) : null;
 }
+function num(v) {
+  if (v === null || v === undefined || v === "") return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
 function hourLabel(iso) {
   try { return new Date(iso).toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"}); }
   catch { return iso?.slice(11,16) || "—"; }
+}
+function rainHourWindowLabel(iso) {
+  const hh = Number(String(iso || "").slice(11,13));
+  if (!Number.isFinite(hh)) return "janela horária";
+  const prev = String((hh + 23) % 24).padStart(2,"0");
+  const end = String(hh).padStart(2,"0");
+  return `${prev}–${end}h`;
 }
 function dateTimeLabel(d = new Date()) {
   return d.toLocaleString("pt-BR", {day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
@@ -164,7 +176,7 @@ async function loadWeather() {
 function summarizeModel(name, raw) {
   const rows = getFutureRows(raw, 12);
   const six = rows.slice(0,6);
-  const arr = (key) => six.map(r => Number(r[key])).filter(Number.isFinite);
+  const arr = (key) => six.map(r => num(r[key])).filter(Number.isFinite);
   return {
     name, rows,
     rainSum: sum(arr("precipitation")), rainPeak: max(arr("precipitation")), rainProb: max(arr("precipitation_probability")),
@@ -186,15 +198,15 @@ function buildConsensus(currentRaw, rawModels, city) {
   const hourly = [];
   for (let i=0; i<12; i++) {
     const rows = ms.map(m => m.rows[i]).filter(Boolean);
-    hourly.push({time:rows[0]?.time, precipitation:median(rows.map(r => Number(r.precipitation))), wind_gusts_10m:median(rows.map(r => Number(r.wind_gusts_10m))), cape:median(rows.map(r => Number(r.cape)))});
+    hourly.push({time:rows[0]?.time, precipitation:median(rows.map(r => num(r.precipitation))), wind_gusts_10m:median(rows.map(r => num(r.wind_gusts_10m))), cape:median(rows.map(r => num(r.cape))), dew_point_2m:median(rows.map(r => num(r.dew_point_2m)))});
   }
   const rainNext2 = getFutureRows(currentRaw, 2).map(row => {
-    const probability = Number(row.precipitation_probability);
-    const precipitation = Number(row.precipitation);
+    const probability = num(row.precipitation_probability);
+    const precipitation = num(row.precipitation);
     return {
       time: row.time,
-      probability: Number.isFinite(probability) ? probability : null,
-      precipitation: Number.isFinite(precipitation) ? precipitation : null,
+      probability,
+      precipitation,
       weather_code: row.weather_code ?? null
     };
   });
@@ -271,7 +283,7 @@ function renderRainNext2(rows = []) {
     const rainMm = Number.isFinite(Number(row.precipitation)) && Number(row.precipitation) > 0 ? ` • ${fmt(row.precipitation,1," mm")}` : "";
     return `
       <article class="rain-hour-card" data-band="${band.key}">
-        <div class="rain-hour-top"><span>${i === 0 ? "Próxima hora" : "Hora seguinte"}</span><b>${hourLabel(row.time)}</b></div>
+        <div class="rain-hour-top"><span>${i === 0 ? "1ª janela" : "2ª janela"}</span><b>${rainHourWindowLabel(row.time)}</b></div>
         <div class="rain-hour-value"><strong>${Number.isFinite(p) ? Math.round(p) : "—"}%</strong><small>${band.label}</small></div>
         <div class="rain-prob-track" aria-hidden="true"><i style="width:${safeP}%"></i></div>
         <p>${condition}${rainMm}</p>
