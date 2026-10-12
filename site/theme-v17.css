@@ -256,3 +256,151 @@ body.visual-v6::before{
   .visual-v6 .official-card::before{font-size:21px;margin-right:5px}
   .visual-v6 #map{height:350px}
 }
+
+
+/* V18 — probabilidade de chuva nas próximas 2 horas */
+.rain-next2{
+  position:relative;
+  overflow:hidden;
+  margin:0 0 12px;
+  padding:15px;
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 88% 12%,rgba(41,200,255,.22),transparent 28%),
+    linear-gradient(135deg,rgba(8,55,95,.96),rgba(15,37,82,.94) 58%,rgba(48,30,91,.88));
+  border:1px solid rgba(71,202,255,.38);
+  box-shadow:0 16px 36px rgba(0,0,0,.22),0 0 28px rgba(27,199,255,.08);
+}
+.rain-next2::after{
+  content:"☔";
+  position:absolute;
+  right:12px;
+  top:-13px;
+  font-size:76px;
+  opacity:.07;
+  pointer-events:none;
+}
+.rain-next2-head{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:11px;
+}
+.rain-next2-head h2{
+  margin:2px 0 0;
+  font-size:20px;
+  letter-spacing:-.3px;
+}
+.rain-next2-head .eyebrow{
+  color:#7ee7ff;
+}
+.rain-next2-summary{
+  flex:0 0 auto;
+  font-size:11px;
+  font-weight:900;
+  padding:7px 10px;
+  border-radius:999px;
+  color:#dff8ff;
+  background:rgba(34,184,255,.12);
+  border:1px solid rgba(74,210,255,.28);
+}
+.rain-next2-summary[data-band="moderate"]{color:#ffe7a3;border-color:rgba(255,199,77,.42);background:rgba(255,183,42,.12)}
+.rain-next2-summary[data-band="high"]{color:#ffd0a1;border-color:rgba(255,139,63,.48);background:rgba(255,122,32,.14)}
+.rain-next2-summary[data-band="very-high"]{color:#ffc1c5;border-color:rgba(255,80,96,.52);background:rgba(255,59,80,.15)}
+.rain-next2-grid{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+}
+.rain-hour-card{
+  min-width:0;
+  border-radius:17px;
+  padding:12px;
+  background:linear-gradient(145deg,rgba(4,29,51,.9),rgba(5,21,40,.88));
+  border:1px solid rgba(92,189,239,.19);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+}
+.rain-hour-card[data-band="moderate"]{border-color:rgba(255,196,70,.3)}
+.rain-hour-card[data-band="high"]{border-color:rgba(255,137,61,.38)}
+.rain-hour-card[data-band="very-high"]{border-color:rgba(255,75,93,.45)}
+.rain-hour-card.is-loading{opacity:.65}
+.rain-hour-top{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:center;
+  margin-bottom:7px;
+}
+.rain-hour-top span,
+.rain-hour-card>span{
+  color:#a8c6dc;
+  font-size:10px;
+  font-weight:700;
+}
+.rain-hour-top b{
+  color:#eaf8ff;
+  font-size:12px;
+}
+.rain-hour-value{
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+  margin-bottom:8px;
+}
+.rain-hour-value strong,
+.rain-hour-card>strong{
+  font-size:30px;
+  line-height:1;
+  letter-spacing:-1px;
+  color:#71ddff;
+}
+.rain-hour-card[data-band="moderate"] .rain-hour-value strong{color:#ffd263}
+.rain-hour-card[data-band="high"] .rain-hour-value strong{color:#ff9c58}
+.rain-hour-card[data-band="very-high"] .rain-hour-value strong{color:#ff7683}
+.rain-hour-value small,
+.rain-hour-card>small{
+  color:#a7bed0;
+  font-size:10px;
+  font-weight:800;
+}
+.rain-prob-track{
+  height:6px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  overflow:hidden;
+}
+.rain-prob-track i{
+  display:block;
+  height:100%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,#20baff,#2ce5c0);
+  box-shadow:0 0 11px rgba(32,186,255,.36);
+}
+.rain-hour-card[data-band="moderate"] .rain-prob-track i{background:linear-gradient(90deg,#ffd65d,#ffb02e)}
+.rain-hour-card[data-band="high"] .rain-prob-track i{background:linear-gradient(90deg,#ffbd52,#ff7f32)}
+.rain-hour-card[data-band="very-high"] .rain-prob-track i{background:linear-gradient(90deg,#ff875c,#ff405c)}
+.rain-hour-card p{
+  margin:8px 0 0;
+  color:#8fb1c9;
+  font-size:9px;
+  line-height:1.35;
+}
+.rain-next2-note{
+  position:relative;
+  z-index:1;
+  margin:9px 1px 0;
+  color:#709ab7;
+  font-size:9px;
+  line-height:1.35;
+}
+@media(max-width:420px){
+  .rain-next2{padding:13px}
+  .rain-next2-head{align-items:flex-start}
+  .rain-next2-summary{font-size:10px;padding:6px 8px}
+  .rain-hour-value strong,.rain-hour-card>strong{font-size:27px}
+}
