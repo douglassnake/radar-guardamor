@@ -3,7 +3,7 @@
   const DATA_URL = './data/guardamor/v5.json';
   const el = id => document.getElementById(id);
   let latestServer = null;
-  let weightsHash = '';
+  let weightsHash = '{}';
 
   function cityId() {
     try { return currentCity?.id || CITY_ID; } catch (_) { return CITY_ID; }
