@@ -57,12 +57,14 @@ jobs:
           test -f site/data/guardamor/v5.json
           test -f scripts/collect_v5.py
           test -f scripts/install_v5.py
+          test -f scripts/test_calculations.py
           node --check site/app.js
           node --check site/cptec.js
           node --check site/v4.js
           node --check site/v5.js
           node --check site/visual.js
-          python -m py_compile scripts/collect_v5.py scripts/install_v5.py
+          python -m py_compile scripts/collect_v5.py scripts/install_v5.py scripts/test_calculations.py
+          python scripts/test_calculations.py
           grep -q 'Análise numérica V5' site/index.html
           grep -q './visual.css' site/index.html
           grep -q './theme-v17.css' site/index.html
