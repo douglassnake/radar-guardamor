@@ -86,8 +86,10 @@ function num(v) {
   return Number.isFinite(n) ? n : null;
 }
 function hourLabel(iso) {
-  try { return new Date(iso).toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"}); }
-  catch { return iso?.slice(11,16) || "—"; }
+  const raw = String(iso || "");
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(raw)) return raw.slice(11,16);
+  try { return new Date(iso).toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit", timeZone:TZ}); }
+  catch { return "—"; }
 }
 function rainHourWindowLabel(iso) {
   const hh = Number(String(iso || "").slice(11,13));
@@ -116,11 +118,18 @@ function getFutureRows(raw, count = 12) {
   for (let i = start; i < Math.min(times.length, start + count); i++) rows.push(pickRow(h, i));
   return rows;
 }
+function zonedMinuteKey(date = new Date()) {
+  const parts = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
+    timeZone: TZ, year:"numeric", month:"2-digit", day:"2-digit",
+    hour:"2-digit", minute:"2-digit", hourCycle:"h23"
+  }).formatToParts(date).filter(p => p.type !== "literal").map(p => [p.type,p.value]));
+  return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}`;
+}
 function getStrictFutureRows(raw, count = 2) {
   const h = raw?.hourly || {};
   const times = h.time || [];
-  const now = Date.now();
-  let start = times.findIndex(t => new Date(t).getTime() > now);
+  const nowKey = zonedMinuteKey();
+  let start = times.findIndex(t => String(t).slice(0,16) > nowKey);
   if (start < 0) return [];
   const rows = [];
   for (let i = start; i < Math.min(times.length, start + count); i++) rows.push(pickRow(h, i));
