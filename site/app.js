@@ -245,8 +245,8 @@ function calculateRisk(c, models = {}) {
   return {level, label:labels[level], summary:summaries[level], score, reasons:reasons.slice(0,5)};
 }
 function rain2hBand(value) {
-  const p = Number(value);
-  if (!Number.isFinite(p)) return {key:"unknown", label:"Sem dado"};
+  const p = num(value);
+  if (p === null) return {key:"unknown", label:"Sem dado"};
   if (p >= 80) return {key:"very-high", label:"Muito alta"};
   if (p >= 60) return {key:"high", label:"Alta"};
   if (p >= 30) return {key:"moderate", label:"Moderada"};
@@ -258,7 +258,7 @@ function renderRainNext2(rows = []) {
   if (!grid || !summary) return;
 
   const items = (Array.isArray(rows) ? rows : []).slice(0, 2);
-  const valid = items.map(r => Number(r?.probability)).filter(Number.isFinite);
+  const valid = items.map(r => num(r?.probability)).filter(Number.isFinite);
   if (!items.length || !valid.length) {
     summary.textContent = "sem dado agora";
     summary.dataset.band = "unknown";
@@ -276,15 +276,16 @@ function renderRainNext2(rows = []) {
   grid.innerHTML = [0,1].map(i => {
     const row = items[i];
     if (!row) return `<article class="rain-hour-card" data-band="unknown"><span>${i === 0 ? "Próxima hora" : "Hora seguinte"}</span><strong>—%</strong><small>sem dado</small></article>`;
-    const p = Number(row.probability);
-    const safeP = Number.isFinite(p) ? Math.max(0, Math.min(100, p)) : 0;
+    const p = num(row.probability);
+    const safeP = p !== null ? Math.max(0, Math.min(100, p)) : 0;
     const band = rain2hBand(p);
     const condition = weatherLabels[row.weather_code] || "Previsão horária";
-    const rainMm = Number.isFinite(Number(row.precipitation)) && Number(row.precipitation) > 0 ? ` • ${fmt(row.precipitation,1," mm")}` : "";
+    const rainAmount = num(row.precipitation);
+    const rainMm = rainAmount !== null && rainAmount > 0 ? ` • ${fmt(rainAmount,1," mm")}` : "";
     return `
       <article class="rain-hour-card" data-band="${band.key}">
         <div class="rain-hour-top"><span>${i === 0 ? "1ª janela" : "2ª janela"}</span><b>${rainHourWindowLabel(row.time)}</b></div>
-        <div class="rain-hour-value"><strong>${Number.isFinite(p) ? Math.round(p) : "—"}%</strong><small>${band.label}</small></div>
+        <div class="rain-hour-value"><strong>${p !== null ? Math.round(p) : "—"}%</strong><small>${band.label}</small></div>
         <div class="rain-prob-track" aria-hidden="true"><i style="width:${safeP}%"></i></div>
         <p>${condition}${rainMm}</p>
       </article>`;
@@ -376,7 +377,7 @@ function summaryURL(city) {
 }
 function summaryFromRaw(city, raw) {
   const rows = getFutureRows(raw, 6);
-  const arr = key => rows.map(r => Number(r[key])).filter(Number.isFinite);
+  const arr = key => rows.map(r => num(r[key])).filter(Number.isFinite);
   const c = {rainSum:sum(arr("precipitation")), rainProb:max(arr("precipitation_probability")), gustMax:max(arr("wind_gusts_10m")), capeMax:max(arr("cape")), dewMax:max(arr("dew_point_2m")), thunderProb:0};
   return {city, ...c, risk:calculateRisk(c)};
 }
