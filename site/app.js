@@ -63,8 +63,8 @@ function slugify(text) {
   return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
 }
 function fmt(v, digits = 0, suffix = "") {
-  if (v === null || v === undefined || Number.isNaN(Number(v))) return "—";
-  return `${Number(v).toFixed(digits)}${suffix}`;
+  const n = num(v);
+  return n === null ? "—" : `${n.toFixed(digits)}${suffix}`;
 }
 function median(values) {
   const a = values.filter(v => Number.isFinite(v)).sort((x,y)=>x-y);
