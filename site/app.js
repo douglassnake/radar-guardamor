@@ -116,6 +116,16 @@ function getFutureRows(raw, count = 12) {
   for (let i = start; i < Math.min(times.length, start + count); i++) rows.push(pickRow(h, i));
   return rows;
 }
+function getStrictFutureRows(raw, count = 2) {
+  const h = raw?.hourly || {};
+  const times = h.time || [];
+  const now = Date.now();
+  let start = times.findIndex(t => new Date(t).getTime() > now);
+  if (start < 0) return [];
+  const rows = [];
+  for (let i = start; i < Math.min(times.length, start + count); i++) rows.push(pickRow(h, i));
+  return rows;
+}
 async function fetchJSON(url, timeoutMs = 14000) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
@@ -200,7 +210,7 @@ function buildConsensus(currentRaw, rawModels, city) {
     const rows = ms.map(m => m.rows[i]).filter(Boolean);
     hourly.push({time:rows[0]?.time, precipitation:median(rows.map(r => num(r.precipitation))), wind_gusts_10m:median(rows.map(r => num(r.wind_gusts_10m))), cape:median(rows.map(r => num(r.cape))), dew_point_2m:median(rows.map(r => num(r.dew_point_2m)))});
   }
-  const rainNext2 = getFutureRows(currentRaw, 2).map(row => {
+  const rainNext2 = getStrictFutureRows(currentRaw, 2).map(row => {
     const probability = num(row.precipitation_probability);
     const precipitation = num(row.precipitation);
     return {
