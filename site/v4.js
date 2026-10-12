@@ -161,7 +161,7 @@
     const labels = ["Normal","Atenção","Alerta","Perigo","Severo"];
     data.risk = {
       level, label:labels[level], score:center,
-      summary:`Índice V4 ${Math.round(center)}/100 • confiança ${conf}% • análise central antes da malha espacial.`,
+      summary:`Índice V5 ${Math.round(center)}/100 • confiança ${conf}% • análise central antes da malha espacial.`,
       reasons:[`chuva ${Math.round(indices.rain)}/100`,`rajada ${Math.round(indices.gust)}/100`,`convecção ${Math.round(indices.conv)}/100`]
     };
     data.v4 = {weights:{rain:wr,gust:wg,cape:wc},indices,centerThreat:center,confidence:conf,historyReady};
@@ -298,10 +298,10 @@
     el('riskLabel').textContent=labels[level];
     el('riskBadge').className=`risk-badge level-${level}`;
     const hot=hotspot ? `${hotspot.ring===0?'centro':`${hotspot.ring} km ${hotspot.dir}`}` : 'malha indisponível';
-    el('riskSummary').textContent=`Índice V4 ${Math.round(overall)}/100 • confiança ${base.confidence}% (${confidenceLabel(base.confidence)}) • setor crítico: ${hot}.`;
+    el('riskSummary').textContent=`Índice V5 ${Math.round(overall)}/100 • confiança ${base.confidence}% (${confidenceLabel(base.confidence)}) • setor crítico: ${hot}.`;
     el('riskReasons').innerHTML=[`chuva ${Math.round(indices.rain)}/100`,`rajada ${Math.round(indices.gust)}/100`,`convecção ${Math.round(indices.conv)}/100`,hotspot?`hotspot ${Math.round(hotspot.rawThreat)}/100`:null].filter(Boolean).map(x=>`<span class="chip">${x}</span>`).join('');
     const eyebrow=document.querySelector('.risk-copy .eyebrow');
-    if (eyebrow) eyebrow.textContent='RISCO NUMÉRICO V4 • 6 H';
+    if (eyebrow) eyebrow.textContent='RISCO NUMÉRICO V5 • 6 H';
   }
   function renderV4(data, spatial, skill) {
     const v=data.v4; if(!v) return;
