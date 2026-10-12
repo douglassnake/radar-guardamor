@@ -111,9 +111,9 @@ function pickRow(hourly, i) {
 function getFutureRows(raw, count = 12) {
   const h = raw?.hourly || {};
   const times = h.time || [];
-  const now = Date.now() - 5 * 60 * 1000;
-  let start = times.findIndex(t => new Date(t).getTime() >= now);
-  if (start < 0) start = 0;
+  const nowKey = zonedMinuteKey();
+  const start = times.findIndex(t => String(t).slice(0,16) > nowKey);
+  if (start < 0) return [];
   const rows = [];
   for (let i = start; i < Math.min(times.length, start + count); i++) rows.push(pickRow(h, i));
   return rows;
@@ -126,14 +126,7 @@ function zonedMinuteKey(date = new Date()) {
   return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}`;
 }
 function getStrictFutureRows(raw, count = 2) {
-  const h = raw?.hourly || {};
-  const times = h.time || [];
-  const nowKey = zonedMinuteKey();
-  let start = times.findIndex(t => String(t).slice(0,16) > nowKey);
-  if (start < 0) return [];
-  const rows = [];
-  for (let i = start; i < Math.min(times.length, start + count); i++) rows.push(pickRow(h, i));
-  return rows;
+  return getFutureRows(raw, count);
 }
 async function fetchJSON(url, timeoutMs = 14000) {
   const ctrl = new AbortController();
