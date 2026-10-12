@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="./v4.css">
   <link rel="stylesheet" href="./visual.css">
+  <link rel="stylesheet" href="./theme-v17.css">
   <link rel="preconnect" href="https://api.open-meteo.com">
   <link rel="preconnect" href="https://geocoding-api.open-meteo.com">
   <link rel="preconnect" href="https://api.rainviewer.com">
@@ -45,6 +46,21 @@
         </div>
       </div>
       <p class="city-note">Trocar a cidade recalcula os três modelos, a malha espacial de 100 km, a camada CPTEC/INPE e o radar.</p>
+    </section>
+
+    <section class="rain-next2 glass" aria-live="polite">
+      <div class="rain-next2-head">
+        <div>
+          <p class="eyebrow">PRÓXIMAS 2 HORAS</p>
+          <h2>Probabilidade de chuva</h2>
+        </div>
+        <span id="rain2hSummary" class="rain-next2-summary">calculando…</span>
+      </div>
+      <div id="rain2hGrid" class="rain-next2-grid">
+        <article class="rain-hour-card is-loading"><span>Próxima hora</span><strong>—%</strong><small>carregando</small></article>
+        <article class="rain-hour-card is-loading"><span>Hora seguinte</span><strong>—%</strong><small>carregando</small></article>
+      </div>
+      <p class="rain-next2-note">Estimativa horária para a cidade selecionada. Atualiza junto com os dados meteorológicos.</p>
     </section>
 
     <section class="risk-card glass" aria-live="polite">

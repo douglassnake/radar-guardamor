@@ -121,6 +121,8 @@ async function fetchCurrent(city = currentCity) {
   const p = new URLSearchParams({
     latitude: city.lat, longitude: city.lon, timezone: TZ,
     current: "temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m",
+    hourly: "precipitation_probability,precipitation,weather_code",
+    forecast_hours: "4",
     wind_speed_unit: "kmh"
   });
   return fetchJSON(`https://api.open-meteo.com/v1/forecast?${p.toString()}`);
@@ -186,7 +188,17 @@ function buildConsensus(currentRaw, rawModels, city) {
     const rows = ms.map(m => m.rows[i]).filter(Boolean);
     hourly.push({time:rows[0]?.time, precipitation:median(rows.map(r => Number(r.precipitation))), wind_gusts_10m:median(rows.map(r => Number(r.wind_gusts_10m))), cape:median(rows.map(r => Number(r.cape)))});
   }
-  return {generatedAt:new Date().toISOString(), city, current:currentRaw.current || {}, models, consensus, hourly, risk:calculateRisk(consensus, models)};
+  const rainNext2 = getFutureRows(currentRaw, 2).map(row => {
+    const probability = Number(row.precipitation_probability);
+    const precipitation = Number(row.precipitation);
+    return {
+      time: row.time,
+      probability: Number.isFinite(probability) ? probability : null,
+      precipitation: Number.isFinite(precipitation) ? precipitation : null,
+      weather_code: row.weather_code ?? null
+    };
+  });
+  return {generatedAt:new Date().toISOString(), city, current:currentRaw.current || {}, models, consensus, hourly, rainNext2, risk:calculateRisk(consensus, models)};
 }
 function calculateRisk(c, models = {}) {
   let score = 0;
@@ -220,8 +232,56 @@ function calculateRisk(c, models = {}) {
   ];
   return {level, label:labels[level], summary:summaries[level], score, reasons:reasons.slice(0,5)};
 }
+function rain2hBand(value) {
+  const p = Number(value);
+  if (!Number.isFinite(p)) return {key:"unknown", label:"Sem dado"};
+  if (p >= 80) return {key:"very-high", label:"Muito alta"};
+  if (p >= 60) return {key:"high", label:"Alta"};
+  if (p >= 30) return {key:"moderate", label:"Moderada"};
+  return {key:"low", label:"Baixa"};
+}
+function renderRainNext2(rows = []) {
+  const grid = $("rain2hGrid");
+  const summary = $("rain2hSummary");
+  if (!grid || !summary) return;
+
+  const items = (Array.isArray(rows) ? rows : []).slice(0, 2);
+  const valid = items.map(r => Number(r?.probability)).filter(Number.isFinite);
+  if (!items.length || !valid.length) {
+    summary.textContent = "sem dado agora";
+    summary.dataset.band = "unknown";
+    grid.innerHTML = `
+      <article class="rain-hour-card" data-band="unknown"><span>Próxima hora</span><strong>—%</strong><small>sem previsão disponível</small></article>
+      <article class="rain-hour-card" data-band="unknown"><span>Hora seguinte</span><strong>—%</strong><small>sem previsão disponível</small></article>`;
+    return;
+  }
+
+  const maxProb = Math.max(...valid);
+  const maxBand = rain2hBand(maxProb);
+  summary.textContent = `${maxBand.label} • até ${Math.round(maxProb)}%`;
+  summary.dataset.band = maxBand.key;
+
+  grid.innerHTML = [0,1].map(i => {
+    const row = items[i];
+    if (!row) return `<article class="rain-hour-card" data-band="unknown"><span>${i === 0 ? "Próxima hora" : "Hora seguinte"}</span><strong>—%</strong><small>sem dado</small></article>`;
+    const p = Number(row.probability);
+    const safeP = Number.isFinite(p) ? Math.max(0, Math.min(100, p)) : 0;
+    const band = rain2hBand(p);
+    const condition = weatherLabels[row.weather_code] || "Previsão horária";
+    const rainMm = Number.isFinite(Number(row.precipitation)) && Number(row.precipitation) > 0 ? ` • ${fmt(row.precipitation,1," mm")}` : "";
+    return `
+      <article class="rain-hour-card" data-band="${band.key}">
+        <div class="rain-hour-top"><span>${i === 0 ? "Próxima hora" : "Hora seguinte"}</span><b>${hourLabel(row.time)}</b></div>
+        <div class="rain-hour-value"><strong>${Number.isFinite(p) ? Math.round(p) : "—"}%</strong><small>${band.label}</small></div>
+        <div class="rain-prob-track" aria-hidden="true"><i style="width:${safeP}%"></i></div>
+        <p>${condition}${rainMm}</p>
+      </article>`;
+  }).join("");
+}
+
 function render(data, cached = false) {
   const {current:c, consensus:n, risk, models, hourly} = data;
+  renderRainNext2(data.rainNext2 || []);
   $("updated").textContent = `${cached ? "Dados salvos • " : "Atualizado "}${dateTimeLabel(new Date(data.generatedAt))}`;
   $("riskLevel").textContent = risk.level;
   $("riskLabel").textContent = risk.label;
@@ -279,6 +339,10 @@ async function selectCity(id) {
 }
 function clearMainMetrics() {
   $("updated").textContent = "Atualizando modelos…";
+  if ($("rain2hSummary")) $("rain2hSummary").textContent = "calculando…";
+  if ($("rain2hGrid")) $("rain2hGrid").innerHTML = `
+    <article class="rain-hour-card is-loading"><span>Próxima hora</span><strong>—%</strong><small>carregando</small></article>
+    <article class="rain-hour-card is-loading"><span>Hora seguinte</span><strong>—%</strong><small>carregando</small></article>`;
   $("riskLabel").textContent = "Analisando";
   $("riskSummary").textContent = `Calculando o risco para ${currentCity.name}.`;
   $("riskReasons").innerHTML = "";
