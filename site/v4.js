@@ -18,13 +18,21 @@
   let lastSpatial = null;
 
   const el = id => document.getElementById(id);
-  const clamp = (v,a=0,b=100) => Math.max(a, Math.min(b, Number(v) || 0));
-  const finite = v => Number.isFinite(Number(v));
-  const values = arr => arr.map(Number).filter(Number.isFinite);
+  const numberValue = v => {
+    if (v === null || v === undefined || v === "") return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  };
+  const clamp = (v,a=0,b=100) => {
+    const n = numberValue(v);
+    return Math.max(a, Math.min(b, n ?? 0));
+  };
+  const finite = v => numberValue(v) !== null;
+  const values = arr => arr.map(numberValue).filter(Number.isFinite);
   const max = arr => { const a=values(arr); return a.length ? Math.max(...a) : null; };
   const sum = arr => { const a=values(arr); return a.length ? a.reduce((x,y)=>x+y,0) : null; };
   const avg = arr => { const a=values(arr); return a.length ? a.reduce((x,y)=>x+y,0)/a.length : null; };
-  const fmt = (v,d=0,s="") => finite(v) ? `${Number(v).toFixed(d)}${s}` : "—";
+  const fmt = (v,d=0,s="") => finite(v) ? `${numberValue(v).toFixed(d)}${s}` : "—";
 
   function cityNow() {
     try { if (typeof currentCity !== "undefined" && currentCity) return {...currentCity}; } catch (_) {}
@@ -62,30 +70,22 @@
     const base = normalise(BASE_WEIGHTS[metric] || BASE_WEIGHTS.dew, names);
     const external = window.RADAR_V5_WEIGHTS?.[city.id]?.[metric];
     if (external?.active && external.values) return normalise(external.values, names);
-    if (metric === "cape" || metric === "dew") return base;
-    const skill = getSkill(city);
-    if (!metricReady(skill, metric, names)) return base;
-    const scale = metric === "rain" ? 3 : 15;
-    const adjusted = {};
-    names.forEach(name => {
-      const st = skill[metric][name];
-      const mae = st.n ? st.abs / st.n : scale;
-      adjusted[name] = base[name] * (1 / (1 + mae / scale));
-    });
-    return normalise(adjusted, names);
+    // A skill local usa referência modelada/assimilada e permanece apenas diagnóstica.
+    // Pesos só podem mudar automaticamente quando a V5 fornecer amostras oficiais.
+    return base;
   }
   function wavg(items, weights, getter) {
     let num=0, den=0;
     items.forEach(item => {
-      const v = Number(getter(item));
-      const w = Number(weights[item.name] ?? 0);
-      if (Number.isFinite(v) && w > 0) { num += v*w; den += w; }
+      const v = numberValue(getter(item));
+      const w = numberValue(weights[item.name]) ?? 0;
+      if (v !== null && w > 0) { num += v*w; den += w; }
     });
     return den ? num/den : null;
   }
   function interpolate(v, points) {
-    v = Number(v);
-    if (!Number.isFinite(v)) return 0;
+    v = numberValue(v);
+    if (v === null) return 0;
     if (v <= points[0][0]) return points[0][1];
     for (let i=1;i<points.length;i++) {
       if (v <= points[i][0]) {
@@ -106,10 +106,10 @@
   }
   function convIndex(c) {
     let idx = interpolate(c.capeMax ?? 0, [[0,0],[250,8],[500,18],[1000,38],[1500,55],[2500,78],[3500,92],[5000,100]]);
-    const dew = Number(c.dewMax);
-    if (Number.isFinite(dew)) idx *= dew >= 22 ? 1.12 : dew >= 19 ? 1.06 : dew < 14 ? .78 : 1;
-    const thunder = Number(c.thunderProb);
-    if (Number.isFinite(thunder)) idx = Math.max(idx, thunder*.9);
+    const dew = numberValue(c.dewMax);
+    if (dew !== null) idx *= dew >= 22 ? 1.12 : dew >= 19 ? 1.06 : dew < 14 ? .78 : 1;
+    const thunder = numberValue(c.thunderProb);
+    if (thunder !== null) idx = Math.max(idx, thunder*.9);
     return clamp(idx);
   }
   function threat(indices) {
@@ -134,12 +134,7 @@
     if (!items.length) return data;
     const wr = weightsFor(city,"rain",names), wg=weightsFor(city,"gust",names), wc=weightsFor(city,"cape",names), wd=weightsFor(city,"dew",names);
     const c = data.consensus;
-    c.rainSum = wavg(items,wr,m=>m.rainSum);
-    c.rainPeak = wavg(items,wr,m=>m.rainPeak);
     c.rainProb = wavg(items,wr,m=>m.rainProb);
-    c.gustMax = wavg(items,wg,m=>m.gustMax);
-    c.capeMax = wavg(items,wc,m=>m.capeMax);
-    c.dewMax = wavg(items,wd,m=>m.dewMax);
     c.humidityMax = wavg(items,wd,m=>m.humidityMax);
     c.thunderProb = wavg(items,wc,m=>m.thunderProb);
     for (let i=0;i<data.hourly.length;i++) {
@@ -147,17 +142,26 @@
       data.hourly[i].precipitation = wavg(rows,wr,x=>x.row.precipitation);
       data.hourly[i].wind_gusts_10m = wavg(rows,wg,x=>x.row.wind_gusts_10m);
       data.hourly[i].cape = wavg(rows,wc,x=>x.row.cape);
+      data.hourly[i].dew_point_2m = wavg(rows,wd,x=>x.row.dew_point_2m);
     }
+    // Os extremos do consenso precisam vir da série horária combinada.
+    // Média de máximos de horários diferentes pode criar um "pico" que nunca ocorreu no consenso.
+    const six = data.hourly.slice(0,6);
+    c.rainSum = sum(six.map(h=>h.precipitation));
+    c.rainPeak = max(six.map(h=>h.precipitation));
+    c.gustMax = max(six.map(h=>h.wind_gusts_10m));
+    c.capeMax = max(six.map(h=>h.cape));
+    c.dewMax = max(six.map(h=>h.dew_point_2m));
     const indices = {rain:rainIndex(c),gust:gustIndex(c),conv:convIndex(c)};
     const center = threat(indices);
     const skill = getSkill(city);
-    const historyReady = metricReady(skill,"rain",names) && metricReady(skill,"gust",names);
+    const historyReady = ["rain","gust"].every(metric => window.RADAR_V5_WEIGHTS?.[city.id]?.[metric]?.active === true);
     const conf = confidenceFor(data.models,historyReady);
     const level = levelFor(center);
     const labels = ["Normal","Atenção","Alerta","Perigo","Severo"];
     data.risk = {
       level, label:labels[level], score:center,
-      summary:`Índice V4 ${Math.round(center)}/100 • confiança ${conf}% • análise central antes da malha espacial.`,
+      summary:`Índice V5 ${Math.round(center)}/100 • confiança ${conf}% • análise central antes da malha espacial.`,
       reasons:[`chuva ${Math.round(indices.rain)}/100`,`rajada ${Math.round(indices.gust)}/100`,`convecção ${Math.round(indices.conv)}/100`]
     };
     data.v4 = {weights:{rain:wr,gust:wg,cape:wc},indices,centerThreat:center,confidence:conf,historyReady};
@@ -231,7 +235,7 @@
         const lead=idx===2?3:6;
         const key=`${m.name}|${row.time}|${lead}`;
         if (seen.has(key)) return;
-        q.push({key,model:m.name,target:row.time,lead,issuedAt:data.generatedAt,rain:Number(row.precipitation),gust:Number(row.wind_gusts_10m)});
+        q.push({key,model:m.name,target:row.time,lead,issuedAt:data.generatedAt,rain:numberValue(row.precipitation),gust:numberValue(row.wind_gusts_10m)});
         seen.add(key);
       });
     }
@@ -248,14 +252,14 @@
     let ref;
     try { ref=await fetchReference(city); } catch { return getSkill(city); }
     const h=ref.hourly || {}, map=new Map();
-    (h.time || []).forEach((t,i)=>map.set(hourKey(t),{rain:Number(h.precipitation?.[i]),gust:Number(h.wind_gusts_10m?.[i])}));
+    (h.time || []).forEach((t,i)=>map.set(hourKey(t),{rain:numberValue(h.precipitation?.[i]),gust:numberValue(h.wind_gusts_10m?.[i])}));
     const skill=getSkill(city), keep=[];
     for (const item of q) {
       const r=map.get(hourKey(item.target));
       if (!r) { keep.push(item); continue; }
       for (const metric of ['rain','gust']) {
-        const pred=Number(item[metric]), obs=Number(r[metric]);
-        if (!Number.isFinite(pred) || !Number.isFinite(obs)) continue;
+        const pred=numberValue(item[metric]), obs=numberValue(r[metric]);
+        if (pred === null || obs === null) continue;
         const st=skill[metric][item.model] ||= {n:0,abs:0};
         st.n += 1; st.abs += Math.abs(pred-obs);
       }
@@ -294,10 +298,10 @@
     el('riskLabel').textContent=labels[level];
     el('riskBadge').className=`risk-badge level-${level}`;
     const hot=hotspot ? `${hotspot.ring===0?'centro':`${hotspot.ring} km ${hotspot.dir}`}` : 'malha indisponível';
-    el('riskSummary').textContent=`Índice V4 ${Math.round(overall)}/100 • confiança ${base.confidence}% (${confidenceLabel(base.confidence)}) • setor crítico: ${hot}.`;
+    el('riskSummary').textContent=`Índice V5 ${Math.round(overall)}/100 • confiança ${base.confidence}% (${confidenceLabel(base.confidence)}) • setor crítico: ${hot}.`;
     el('riskReasons').innerHTML=[`chuva ${Math.round(indices.rain)}/100`,`rajada ${Math.round(indices.gust)}/100`,`convecção ${Math.round(indices.conv)}/100`,hotspot?`hotspot ${Math.round(hotspot.rawThreat)}/100`:null].filter(Boolean).map(x=>`<span class="chip">${x}</span>`).join('');
     const eyebrow=document.querySelector('.risk-copy .eyebrow');
-    if (eyebrow) eyebrow.textContent='RISCO NUMÉRICO V4 • 6 H';
+    if (eyebrow) eyebrow.textContent='RISCO NUMÉRICO V5 • 6 H';
   }
   function renderV4(data, spatial, skill) {
     const v=data.v4; if(!v) return;
@@ -317,7 +321,8 @@
     const sampleRain=Math.min(...names.map(n=>skill?.rain?.[n]?.n||0));
     const sampleGust=Math.min(...names.map(n=>skill?.gust?.[n]?.n||0));
     const sample=Math.min(sampleRain,sampleGust);
-    el('v4History').textContent=sample>=MIN_SAMPLES ? `${sample} amostras • pesos autoajustáveis ativos` : `${sample}/${MIN_SAMPLES} amostras • pesos ainda nos valores iniciais`;
+    const officialActive = ["rain","gust"].some(metric => window.RADAR_V5_WEIGHTS?.[data.city.id]?.[metric]?.active === true);
+    el('v4History').textContent=officialActive ? `${sample} amostras locais • pesos oficiais V5 ativos quando disponíveis` : `${sample} amostras locais provisórias • pesos mantidos nos valores iniciais`;
     el('v4Status').textContent=spatial ? '33 pontos • 0–100 km' : 'malha indisponível';
     updateRiskUI(data,spatial);
   }

@@ -112,16 +112,18 @@ def model_fetch(name, endpoint):
 
 def future_targets(model, issued):
     times = model["time"]
-    future = []
+    parsed = []
     for i, t in enumerate(times):
         dt = parse_dt(t)
-        if dt and dt >= issued - timedelta(minutes=5):
-            future.append((i, dt))
+        if dt:
+            parsed.append((i, dt))
     out=[]
     for lead in (3,6):
-        if len(future) <= lead-1:
+        desired = issued + timedelta(hours=lead)
+        match = next(((i, dt) for i, dt in parsed if dt >= desired), None)
+        if not match:
             continue
-        i, target = future[lead-1]
+        i, target = match
         out.append({
             "lead":lead, "target":target.isoformat(timespec="minutes"),
             "rain":finite(model["rain"][i] if i < len(model["rain"]) else None),
@@ -189,12 +191,14 @@ def idf_intensity(return_years, minutes):
 
 
 def metric_summary(records, model, official_only=False):
-    rr=[r for r in records if r.get("model")==model and (not official_only or r.get("rain_official"))]
-    rain_err=[r["rain_error"] for r in rr if finite(r.get("rain_error")) is not None]
-    gust_err=[r["gust_error"] for r in rr if finite(r.get("gust_error")) is not None]
+    rr=[r for r in records if r.get("model")==model]
+    rain_rr=[r for r in rr if not official_only or r.get("rain_official")]
+    gust_rr=[r for r in rr if not official_only or r.get("gust_official")]
+    rain_err=[r["rain_error"] for r in rain_rr if finite(r.get("rain_error")) is not None]
+    gust_err=[r["gust_error"] for r in gust_rr if finite(r.get("gust_error")) is not None]
     def mae(vals): return sum(abs(x) for x in vals)/len(vals) if vals else None
     def rmse(vals): return math.sqrt(sum(x*x for x in vals)/len(vals)) if vals else None
-    events=[r for r in rr if r.get("event_obs") is not None and r.get("event_pred") is not None]
+    events=[r for r in rain_rr if r.get("event_obs") is not None and r.get("event_pred") is not None]
     hits=sum(1 for r in events if r["event_obs"] and r["event_pred"])
     miss=sum(1 for r in events if r["event_obs"] and not r["event_pred"])
     fa=sum(1 for r in events if not r["event_obs"] and r["event_pred"])
@@ -202,7 +206,8 @@ def metric_summary(records, model, official_only=False):
     far=fa/(hits+fa) if hits+fa else None
     csi=hits/(hits+miss+fa) if hits+miss+fa else None
     brier=sum((float(r["event_pred"])-float(r["event_obs"]))**2 for r in events)/len(events) if events else None
-    return {"n":len(rr),"rain_n":len(rain_err),"gust_n":len(gust_err),"mae_rain":mae(rain_err),"rmse_rain":rmse(rain_err),"mae_gust":mae(gust_err),"rmse_gust":rmse(gust_err),"events_n":len(events),"pod":pod,"far":far,"csi":csi,"brier":brier}
+    n = len(rr) if not official_only else max(len(rain_rr), len(gust_rr))
+    return {"n":n,"rain_n":len(rain_err),"gust_n":len(gust_err),"mae_rain":mae(rain_err),"rmse_rain":rmse(rain_err),"mae_gust":mae(gust_err),"rmse_gust":rmse(gust_err),"events_n":len(events),"pod":pod,"far":far,"csi":csi,"brier":brier}
 
 
 def adaptive_weights(metrics, metric):
@@ -216,7 +221,8 @@ def adaptive_weights(metrics, metric):
     raw={}
     for name in MODELS:
         rmse=metrics[name]["official"].get(key)
-        raw[name]=base[name]*(1/(1+(rmse or scale)/scale))
+        effective_rmse = rmse if rmse is not None else scale
+        raw[name]=base[name]*(1/(1+effective_rmse/scale))
     total=sum(raw.values()) or 1
     return {"active":True,"values":{k:v/total for k,v in raw.items()},"reason":"ponderação por RMSE oficial"}
 
@@ -288,12 +294,12 @@ def main():
         latest_models[name]={"targets":targets}
 
     summary={
-        "version":"5.0",
+        "version":"5.1",
         "generated_at":datetime.now(timezone.utc).isoformat(),
         "city":CITY,
         "observation": cem if cem else {"official":False,"rain":None,"time":None,"station":None,"note":"CEMADEN exige JWT; sem token o servidor mantém apenas referência provisória para verificação."},
         "idf":{**IDF,"equation":"i = 778.7 * T^0.1834 / (t + 10)^0.7399","thresholds_1h_mm_h":{str(T):round(idf_intensity(T,60),1) for T in (2,5,10,25,50,100)}},
-        "event_definition":{"rain_event_mm_h":RAIN_EVENT_MM_H,"brier":"binário/determinístico para o mesmo limiar"},
+        "event_definition":{"rain_event_mm_h":RAIN_EVENT_MM_H,"brier":"binário/determinístico para o mesmo limiar","lead_definition":"alvo nominal em issued + 3 h e issued + 6 h"},
         "metrics":metrics,
         "weights":{"rain":adaptive_weights(metrics,"rain"),"gust":adaptive_weights(metrics,"gust")},
         "counts":{"queue":len(state["queue"]),"verifications":len(state["verifications"]),"official_rain":sum(1 for r in state["verifications"] if r.get("rain_official"))},

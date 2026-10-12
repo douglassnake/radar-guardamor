@@ -3,17 +3,26 @@
   const DATA_URL = './data/guardamor/v5.json';
   const el = id => document.getElementById(id);
   let latestServer = null;
-  let weightsHash = '';
+  let weightsHash = '{}';
 
   function cityId() {
     try { return currentCity?.id || CITY_ID; } catch (_) { return CITY_ID; }
   }
-  function fmt(v, d=1, suffix='') {
-    return Number.isFinite(Number(v)) ? `${Number(v).toFixed(d)}${suffix}` : '—';
+  function numberValue(v) {
+    if (v === null || v === undefined || v === '') return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
   }
-  function pct(v) { return Number.isFinite(Number(v)) ? `${Math.round(Number(v)*100)}%` : '—'; }
+  function fmt(v, d=1, suffix='') {
+    const n = numberValue(v);
+    return n !== null ? `${n.toFixed(d)}${suffix}` : '—';
+  }
+  function pct(v) {
+    const n = numberValue(v);
+    return n !== null ? `${Math.round(n*100)}%` : '—';
+  }
   function currentRainPeak() {
-    try { return Number(lastData?.consensus?.rainPeak); } catch (_) { return NaN; }
+    try { return numberValue(lastData?.consensus?.rainPeak) ?? NaN; } catch (_) { return NaN; }
   }
   function idfReturnYears(intensity, minutes=60) {
     if (!Number.isFinite(intensity) || intensity <= 0) return null;
@@ -62,16 +71,21 @@
     }).join('');
   }
   function applyWeights(data) {
-    const rain=data.weights?.rain;
     window.RADAR_V5_WEIGHTS ||= {};
-    if (rain?.active) {
-      window.RADAR_V5_WEIGHTS[CITY_ID] ||= {};
-      window.RADAR_V5_WEIGHTS[CITY_ID].rain={active:true,values:rain.values};
-      const h=JSON.stringify(rain.values);
-      if (h!==weightsHash) {
-        weightsHash=h;
-        setTimeout(()=>{ try { if (cityId()===CITY_ID && typeof loadWeather==='function') loadWeather(); } catch (_) {} },350);
+    window.RADAR_V5_WEIGHTS[CITY_ID] ||= {};
+    for (const metric of ['rain','gust']) {
+      const incoming=data.weights?.[metric];
+      if (incoming?.active && incoming.values) {
+        window.RADAR_V5_WEIGHTS[CITY_ID][metric]={active:true,values:incoming.values};
+      } else {
+        delete window.RADAR_V5_WEIGHTS[CITY_ID][metric];
       }
+    }
+    const active = window.RADAR_V5_WEIGHTS[CITY_ID];
+    const h=JSON.stringify(active);
+    if (h!==weightsHash) {
+      weightsHash=h;
+      setTimeout(()=>{ try { if (cityId()===CITY_ID && typeof loadWeather==='function') loadWeather(); } catch (_) {} },350);
     }
   }
   function renderLive() {
@@ -95,12 +109,21 @@
     el('v5Status').textContent=Number.isNaN(date.getTime())?'servidor ativo':`servidor ${date.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}`;
     renderRows(d);
     const rain=d.weights?.rain;
+    const gust=d.weights?.gust;
+    const status=[];
     if (rain?.active) {
       const parts=Object.entries(rain.values||{}).map(([k,v])=>`${k} ${Math.round(v*100)}%`);
-      el('v5Weights').textContent=`Peso oficial de chuva ativo • ${parts.join(' • ')}`;
+      status.push(`chuva ativa: ${parts.join(' • ')}`);
     } else {
-      el('v5Weights').textContent=`Peso oficial de chuva aguardando amostras • ${rain?.reason || 'coleta em andamento'}. Rajada permanece provisória.`;
+      status.push(`chuva aguardando: ${rain?.reason || 'coleta em andamento'}`);
     }
+    if (gust?.active) {
+      const parts=Object.entries(gust.values||{}).map(([k,v])=>`${k} ${Math.round(v*100)}%`);
+      status.push(`rajada ativa: ${parts.join(' • ')}`);
+    } else {
+      status.push(`rajada aguardando observação oficial`);
+    }
+    el('v5Weights').textContent=`Pesos oficiais V5 • ${status.join(' • ')}.`;
   }
   async function fetchServer() {
     ensurePanel();
