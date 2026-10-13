@@ -1,0 +1,10 @@
+html.native-app #installHelp,
+html.native-app #installDialog {
+  display: none !important;
+}
+html.native-app .actions {
+  grid-template-columns: 1fr !important;
+}
+html.native-app .app-shell {
+  padding-bottom: calc(28px + env(safe-area-inset-bottom));
+}
