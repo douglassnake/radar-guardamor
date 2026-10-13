@@ -45,6 +45,10 @@ jobs:
         run: |
           test -f site/index.html
           test -f site/manifest.webmanifest
+          test -f site/privacy.html
+          test -f site/support.html
+          test -f site/native.css
+          test -f site/native.js
           test -f site/sw.js
           test -f site/app.js
           test -f site/cptec.js
@@ -69,13 +73,16 @@ jobs:
           grep -q './visual.css' site/index.html
           grep -q './theme-v17.css' site/index.html
           grep -q './visual.js' site/index.html
+          grep -q './privacy.html' site/index.html
+          grep -q './support.html' site/index.html
+          grep -q './native.js' site/index.html
           grep -q 'rain2hGrid' site/index.html
           grep -q 'rainNext2' site/app.js
           grep -q 'numberValue' site/v4.js
           grep -q 'c.rainPeak = max(six.map' site/v4.js
           grep -q 'getStrictFutureRows' site/app.js
           grep -q 'lead_definition' scripts/collect_v5.py
-          grep -q 'radar-gm-v19-calculation-audit' site/sw.js
+          grep -q 'radar-gm-v20-store-release' site/sw.js
           grep -q 'theme-v17.css' site/sw.js
           grep -q 'tile.openstreetmap.org' site/sw.js
           grep -q 'installOwnRadar' site/visual.js
