@@ -1,0 +1,43 @@
+default_platform(:android)
+
+PACKAGE_ID = "com.douglassnake.radarguardamor"
+
+platform :android do
+  desc "Envia o AAB assinado para uma faixa do Google Play"
+  lane :upload do
+    aab = ENV.fetch("ANDROID_AAB_PATH")
+    track = ENV.fetch("GOOGLE_PLAY_TRACK", "internal")
+    service_account = ENV.fetch("GOOGLE_PLAY_SERVICE_ACCOUNT_JSON")
+
+    supply(
+      aab: aab,
+      package_name: PACKAGE_ID,
+      track: track,
+      json_key_data: service_account,
+      release_status: "completed",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end
+
+platform :ios do
+  private_lane :connect_key do
+    app_store_connect_api_key(
+      key_id: ENV.fetch("APP_STORE_CONNECT_KEY_ID"),
+      issuer_id: ENV.fetch("APP_STORE_CONNECT_ISSUER_ID"),
+      key_content: ENV.fetch("APP_STORE_CONNECT_API_KEY_BASE64"),
+      is_key_content_base64: true
+    )
+  end
+
+  desc "Envia o IPA assinado ao TestFlight"
+  lane :testflight do
+    upload_to_testflight(
+      api_key: connect_key,
+      ipa: ENV.fetch("IOS_IPA_PATH"),
+      skip_waiting_for_build_processing: true
+    )
+  end
+end
