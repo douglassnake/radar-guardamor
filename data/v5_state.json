@@ -1,17 +1,6 @@
 {
   "queue": [
     {
-      "key": "ECMWF|2026-10-15T10:00|3",
-      "model": "ECMWF",
-      "issued": "2026-10-15T10:00",
-      "lead": 3,
-      "target": "2026-10-15T13:00",
-      "rain": 0.0,
-      "gust": 25.9,
-      "cape": 1080.0,
-      "dew": 19.6
-    },
-    {
       "key": "ECMWF|2026-10-15T10:00|6",
       "model": "ECMWF",
       "issued": "2026-10-15T10:00",
@@ -21,17 +10,6 @@
       "gust": 19.4,
       "cape": 1200.0,
       "dew": 20.0
-    },
-    {
-      "key": "GFS|2026-10-15T10:00|3",
-      "model": "GFS",
-      "issued": "2026-10-15T10:00",
-      "lead": 3,
-      "target": "2026-10-15T13:00",
-      "rain": 0.0,
-      "gust": 13.3,
-      "cape": 460.0,
-      "dew": 15.3
     },
     {
       "key": "GFS|2026-10-15T10:00|6",
@@ -45,17 +23,6 @@
       "dew": 16.4
     },
     {
-      "key": "ICON|2026-10-15T10:00|3",
-      "model": "ICON",
-      "issued": "2026-10-15T10:00",
-      "lead": 3,
-      "target": "2026-10-15T13:00",
-      "rain": 0.0,
-      "gust": 15.8,
-      "cape": 620.0,
-      "dew": 19.4
-    },
-    {
       "key": "ICON|2026-10-15T10:00|6",
       "model": "ICON",
       "issued": "2026-10-15T10:00",
@@ -65,6 +32,72 @@
       "gust": 19.4,
       "cape": 740.0,
       "dew": 19.2
+    },
+    {
+      "key": "ECMWF|2026-10-15T15:00|3",
+      "model": "ECMWF",
+      "issued": "2026-10-15T15:00",
+      "lead": 3,
+      "target": "2026-10-15T18:00",
+      "rain": 0.0,
+      "gust": 10.1,
+      "cape": 1320.0,
+      "dew": 20.9
+    },
+    {
+      "key": "ECMWF|2026-10-15T15:00|6",
+      "model": "ECMWF",
+      "issued": "2026-10-15T15:00",
+      "lead": 6,
+      "target": "2026-10-15T21:00",
+      "rain": 0.0,
+      "gust": 4.7,
+      "cape": 1310.0,
+      "dew": 20.9
+    },
+    {
+      "key": "GFS|2026-10-15T15:00|3",
+      "model": "GFS",
+      "issued": "2026-10-15T15:00",
+      "lead": 3,
+      "target": "2026-10-15T18:00",
+      "rain": 0.0,
+      "gust": 20.2,
+      "cape": 190.0,
+      "dew": 16.2
+    },
+    {
+      "key": "GFS|2026-10-15T15:00|6",
+      "model": "GFS",
+      "issued": "2026-10-15T15:00",
+      "lead": 6,
+      "target": "2026-10-15T21:00",
+      "rain": 0.2,
+      "gust": 29.5,
+      "cape": 280.0,
+      "dew": 17.7
+    },
+    {
+      "key": "ICON|2026-10-15T15:00|3",
+      "model": "ICON",
+      "issued": "2026-10-15T15:00",
+      "lead": 3,
+      "target": "2026-10-15T18:00",
+      "rain": 0.1,
+      "gust": 8.6,
+      "cape": 690.0,
+      "dew": 21.4
+    },
+    {
+      "key": "ICON|2026-10-15T15:00|6",
+      "model": "ICON",
+      "issued": "2026-10-15T15:00",
+      "lead": 6,
+      "target": "2026-10-15T21:00",
+      "rain": 0.2,
+      "gust": 11.2,
+      "cape": 660.0,
+      "dew": 21.5
     }
   ],
   "verifications": [
@@ -5103,6 +5136,72 @@
       "gust_source": "Open-Meteo referência assimilada/modelada",
       "rain_error": 0.0,
       "gust_error": -8.600000000000001,
+      "event_pred": false,
+      "event_obs": false
+    },
+    {
+      "key": "ECMWF|2026-10-15T10:00|3",
+      "model": "ECMWF",
+      "issued": "2026-10-15T10:00",
+      "lead": 3,
+      "target": "2026-10-15T13:00",
+      "rain": 0.0,
+      "gust": 25.9,
+      "cape": 1080.0,
+      "dew": 19.6,
+      "verified": "2026-10-15T15:16",
+      "obs_rain": 0.0,
+      "obs_gust": 29.9,
+      "rain_official": false,
+      "rain_source": "Open-Meteo referência assimilada/modelada",
+      "gust_official": false,
+      "gust_source": "Open-Meteo referência assimilada/modelada",
+      "rain_error": 0.0,
+      "gust_error": -4.0,
+      "event_pred": false,
+      "event_obs": false
+    },
+    {
+      "key": "GFS|2026-10-15T10:00|3",
+      "model": "GFS",
+      "issued": "2026-10-15T10:00",
+      "lead": 3,
+      "target": "2026-10-15T13:00",
+      "rain": 0.0,
+      "gust": 13.3,
+      "cape": 460.0,
+      "dew": 15.3,
+      "verified": "2026-10-15T15:16",
+      "obs_rain": 0.0,
+      "obs_gust": 29.9,
+      "rain_official": false,
+      "rain_source": "Open-Meteo referência assimilada/modelada",
+      "gust_official": false,
+      "gust_source": "Open-Meteo referência assimilada/modelada",
+      "rain_error": 0.0,
+      "gust_error": -16.599999999999998,
+      "event_pred": false,
+      "event_obs": false
+    },
+    {
+      "key": "ICON|2026-10-15T10:00|3",
+      "model": "ICON",
+      "issued": "2026-10-15T10:00",
+      "lead": 3,
+      "target": "2026-10-15T13:00",
+      "rain": 0.0,
+      "gust": 15.8,
+      "cape": 620.0,
+      "dew": 19.4,
+      "verified": "2026-10-15T15:16",
+      "obs_rain": 0.0,
+      "obs_gust": 29.9,
+      "rain_official": false,
+      "rain_source": "Open-Meteo referência assimilada/modelada",
+      "gust_official": false,
+      "gust_source": "Open-Meteo referência assimilada/modelada",
+      "rain_error": 0.0,
+      "gust_error": -14.099999999999998,
       "event_pred": false,
       "event_obs": false
     }
