@@ -1,6 +1,6 @@
 {
   "version": "5.1",
-  "generated_at": "2026-10-18T17:20:48.167719+00:00",
+  "generated_at": "2026-10-18T20:40:03.711203+00:00",
   "city": {
     "id": "guarda-mor-mg",
     "name": "Guarda-Mor",
@@ -163,7 +163,7 @@
     }
   },
   "counts": {
-    "queue": 9,
+    "queue": 15,
     "verifications": 336,
     "official_rain": 0
   },
@@ -172,19 +172,19 @@
       "targets": [
         {
           "lead": 3,
-          "target": "2026-10-18T17:00",
+          "target": "2026-10-18T20:00",
           "rain": 0.0,
-          "gust": 23.0,
-          "cape": 710.0,
-          "dew": 18.1
+          "gust": 6.1,
+          "cape": 350.0,
+          "dew": 19.2
         },
         {
           "lead": 6,
-          "target": "2026-10-18T20:00",
+          "target": "2026-10-18T23:00",
           "rain": 0.0,
-          "gust": 7.6,
-          "cape": 460.0,
-          "dew": 19.1
+          "gust": 5.8,
+          "cape": 70.0,
+          "dew": 18.3
         }
       ]
     },
@@ -192,19 +192,19 @@
       "targets": [
         {
           "lead": 3,
-          "target": "2026-10-18T17:00",
+          "target": "2026-10-18T20:00",
           "rain": 0.0,
-          "gust": 29.9,
-          "cape": 150.0,
-          "dew": 14.5
+          "gust": 33.1,
+          "cape": 0.0,
+          "dew": 13.4
         },
         {
           "lead": 6,
-          "target": "2026-10-18T20:00",
+          "target": "2026-10-18T23:00",
           "rain": 0.0,
-          "gust": 34.2,
+          "gust": 22.3,
           "cape": 0.0,
-          "dew": 13.4
+          "dew": 11.4
         }
       ]
     },
@@ -212,19 +212,19 @@
       "targets": [
         {
           "lead": 3,
-          "target": "2026-10-18T17:00",
-          "rain": 0.0,
-          "gust": 32.8,
-          "cape": 120.0,
-          "dew": 14.6
-        },
-        {
-          "lead": 6,
           "target": "2026-10-18T20:00",
           "rain": 0.0,
           "gust": 14.4,
           "cape": 0.0,
           "dew": 14.8
+        },
+        {
+          "lead": 6,
+          "target": "2026-10-18T23:00",
+          "rain": 0.0,
+          "gust": 13.3,
+          "cape": 0.0,
+          "dew": 14.6
         }
       ]
     }
