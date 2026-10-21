@@ -78,11 +78,14 @@ jobs:
           grep -q './native.js' site/index.html
           grep -q 'rain2hGrid' site/index.html
           grep -q 'rainNext2' site/app.js
+          grep -q 'rain5dGrid' site/index.html
+          grep -q 'rainNext5Days' site/app.js
+          grep -q 'precipitation_probability_max' site/app.js
           grep -q 'numberValue' site/v4.js
           grep -q 'c.rainPeak = max(six.map' site/v4.js
           grep -q 'getStrictFutureRows' site/app.js
           grep -q 'lead_definition' scripts/collect_v5.py
-          grep -q 'radar-gm-v20-store-release' site/sw.js
+          grep -q 'radar-gm-v21-rain-5d' site/sw.js
           grep -q 'theme-v17.css' site/sw.js
           grep -q 'tile.openstreetmap.org' site/sw.js
           grep -q 'installOwnRadar' site/visual.js
