@@ -404,3 +404,152 @@ body.visual-v6::before{
   .rain-next2-summary{font-size:10px;padding:6px 8px}
   .rain-hour-value strong,.rain-hour-card>strong{font-size:27px}
 }
+
+
+/* V21 — probabilidade de chuva nos próximos 5 dias */
+.rain-next5{
+  position:relative;
+  overflow:hidden;
+  margin:0 0 12px;
+  padding:15px;
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 91% 10%,rgba(92,91,255,.20),transparent 27%),
+    radial-gradient(circle at 8% 86%,rgba(28,218,255,.10),transparent 24%),
+    linear-gradient(135deg,rgba(7,47,84,.97),rgba(12,34,73,.95) 56%,rgba(42,31,91,.91));
+  border:1px solid rgba(74,186,255,.34);
+  box-shadow:0 16px 36px rgba(0,0,0,.22),0 0 28px rgba(62,97,255,.07);
+}
+.rain-next5::after{
+  content:"🌦️";
+  position:absolute;
+  right:10px;
+  top:-12px;
+  font-size:78px;
+  opacity:.07;
+  pointer-events:none;
+}
+.rain-next5-head{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:11px;
+}
+.rain-next5-head h2{
+  margin:2px 0 0;
+  font-size:20px;
+  letter-spacing:-.3px;
+}
+.rain-next5-head .eyebrow{color:#86e9ff}
+.rain-next5-summary{
+  flex:0 0 auto;
+  font-size:11px;
+  font-weight:900;
+  padding:7px 10px;
+  border-radius:999px;
+  color:#e3f8ff;
+  background:rgba(41,161,255,.12);
+  border:1px solid rgba(85,195,255,.29);
+}
+.rain-next5-summary[data-band="moderate"]{color:#ffe7a3;border-color:rgba(255,199,77,.42);background:rgba(255,183,42,.12)}
+.rain-next5-summary[data-band="high"]{color:#ffd0a1;border-color:rgba(255,139,63,.48);background:rgba(255,122,32,.14)}
+.rain-next5-summary[data-band="very-high"]{color:#ffc1c5;border-color:rgba(255,80,96,.52);background:rgba(255,59,80,.15)}
+.rain-next5-grid{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:repeat(5,minmax(118px,1fr));
+  gap:9px;
+  overflow-x:auto;
+  padding-bottom:2px;
+  scrollbar-width:thin;
+}
+.rain-day-card{
+  min-width:118px;
+  border-radius:17px;
+  padding:11px;
+  background:linear-gradient(150deg,rgba(5,35,62,.94),rgba(5,22,42,.91));
+  border:1px solid rgba(91,181,235,.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+}
+.rain-day-card[data-band="moderate"]{border-color:rgba(255,196,70,.30)}
+.rain-day-card[data-band="high"]{border-color:rgba(255,137,61,.38)}
+.rain-day-card[data-band="very-high"]{border-color:rgba(255,75,93,.45)}
+.rain-day-card.is-loading{opacity:.62}
+.rain-day-top{
+  min-height:34px;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  margin-bottom:7px;
+}
+.rain-day-top span,
+.rain-day-card>span{
+  color:#e8f7ff;
+  font-size:11px;
+  font-weight:850;
+  white-space:nowrap;
+}
+.rain-day-top small,
+.rain-day-card>small{
+  color:#8eb0c8;
+  font-size:9px;
+  font-weight:800;
+}
+.rain-day-card>strong{
+  display:block;
+  font-size:28px;
+  line-height:1;
+  letter-spacing:-1px;
+  color:#71ddff;
+}
+.rain-day-card[data-band="moderate"]>strong{color:#ffd263}
+.rain-day-card[data-band="high"]>strong{color:#ff9c58}
+.rain-day-card[data-band="very-high"]>strong{color:#ff7683}
+.rain-day-track{
+  height:6px;
+  margin-top:8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  overflow:hidden;
+}
+.rain-day-track i{
+  display:block;
+  height:100%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,#21baff,#2ce5c0);
+  box-shadow:0 0 10px rgba(32,186,255,.33);
+}
+.rain-day-card[data-band="moderate"] .rain-day-track i{background:linear-gradient(90deg,#ffd65d,#ffb02e)}
+.rain-day-card[data-band="high"] .rain-day-track i{background:linear-gradient(90deg,#ffbd52,#ff7f32)}
+.rain-day-card[data-band="very-high"] .rain-day-track i{background:linear-gradient(90deg,#ff875c,#ff405c)}
+.rain-day-card p{
+  min-height:26px;
+  margin:8px 0 3px;
+  color:#91b1c8;
+  font-size:9px;
+  line-height:1.25;
+}
+.rain-day-card b{
+  display:block;
+  color:#cae5f6;
+  font-size:9px;
+  font-weight:800;
+}
+.rain-next5-note{
+  position:relative;
+  z-index:1;
+  margin:9px 1px 0;
+  color:#719ab6;
+  font-size:9px;
+  line-height:1.35;
+}
+@media(max-width:620px){
+  .rain-next5{padding:13px}
+  .rain-next5-head{align-items:flex-start}
+  .rain-next5-summary{font-size:10px;padding:6px 8px}
+  .rain-next5-grid{grid-template-columns:repeat(5,124px)}
+}
