@@ -128,6 +128,36 @@ function zonedMinuteKey(date = new Date()) {
 function getStrictFutureRows(raw, count = 2) {
   return getFutureRows(raw, count);
 }
+function getRainNext5Days(raw, count = 5) {
+  const d = raw?.daily || {};
+  const times = Array.isArray(d.time) ? d.time : [];
+  const rows = [];
+  for (let i = 0; i < Math.min(times.length, count); i++) {
+    rows.push({
+      date: times[i],
+      probability: num(d.precipitation_probability_max?.[i]),
+      precipitation: num(d.precipitation_sum?.[i]),
+      weather_code: d.weather_code?.[i] ?? null
+    });
+  }
+  return rows;
+}
+function rainDayLabel(dateStr) {
+  const today = zonedMinuteKey().slice(0,10);
+  const a = Date.parse(`${today}T00:00:00Z`);
+  const b = Date.parse(`${String(dateStr || "").slice(0,10)}T00:00:00Z`);
+  const diff = Number.isFinite(a) && Number.isFinite(b) ? Math.round((b-a)/86400000) : null;
+  if (diff === 0) return "Hoje";
+  if (diff === 1) return "Amanhã";
+  try {
+    const d = new Date(`${dateStr}T12:00:00-03:00`);
+    const weekday = d.toLocaleDateString("pt-BR",{weekday:"short",timeZone:TZ}).replace(".","");
+    const dm = d.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",timeZone:TZ});
+    return `${weekday} • ${dm}`;
+  } catch (_) {
+    return String(dateStr || "").slice(5).split("-").reverse().join("/");
+  }
+}
 async function fetchJSON(url, timeoutMs = 14000) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
@@ -146,7 +176,9 @@ async function fetchCurrent(city = currentCity) {
     latitude: city.lat, longitude: city.lon, timezone: TZ,
     current: "temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m",
     hourly: "precipitation_probability,precipitation,weather_code",
+    daily: "precipitation_probability_max,precipitation_sum,weather_code",
     forecast_hours: "4",
+    forecast_days: "5",
     wind_speed_unit: "kmh"
   });
   return fetchJSON(`https://api.open-meteo.com/v1/forecast?${p.toString()}`);
@@ -222,7 +254,8 @@ function buildConsensus(currentRaw, rawModels, city) {
       weather_code: row.weather_code ?? null
     };
   });
-  return {generatedAt:new Date().toISOString(), city, current:currentRaw.current || {}, models, consensus, hourly, rainNext2, risk:calculateRisk(consensus, models)};
+  const rainNext5Days = getRainNext5Days(currentRaw, 5);
+  return {generatedAt:new Date().toISOString(), city, current:currentRaw.current || {}, models, consensus, hourly, rainNext2, rainNext5Days, risk:calculateRisk(consensus, models)};
 }
 function calculateRisk(c, models = {}) {
   let score = 0;
@@ -304,9 +337,50 @@ function renderRainNext2(rows = []) {
   }).join("");
 }
 
+function renderRainNext5(rows = []) {
+  const grid = $("rain5dGrid");
+  const summary = $("rain5dSummary");
+  if (!grid || !summary) return;
+
+  const items = (Array.isArray(rows) ? rows : []).slice(0,5);
+  const valid = items.map(r => num(r?.probability)).filter(Number.isFinite);
+  if (!items.length || !valid.length) {
+    summary.textContent = "sem dados";
+    summary.dataset.band = "unknown";
+    grid.innerHTML = Array.from({length:5}, () =>
+      '<article class="rain-day-card" data-band="unknown"><span>—</span><strong>—%</strong><small>sem previsão</small></article>'
+    ).join("");
+    return;
+  }
+
+  const maxProb = Math.max(...valid);
+  const band = rain2hBand(maxProb);
+  const wetDays = valid.filter(v => v >= 30).length;
+  summary.textContent = `até ${Math.round(maxProb)}% • ${wetDays} dia${wetDays === 1 ? "" : "s"} ≥30%`;
+  summary.dataset.band = band.key;
+
+  grid.innerHTML = items.map(row => {
+    const p = num(row.probability);
+    const safeP = p !== null ? Math.max(0,Math.min(100,p)) : 0;
+    const rain = num(row.precipitation);
+    const dayBand = rain2hBand(p);
+    const condition = weatherLabels[row.weather_code] || "Previsão diária";
+    const rainText = rain !== null ? `${fmt(rain,1," mm")} no dia` : "acumulado indisponível";
+    return `
+      <article class="rain-day-card" data-band="${dayBand.key}">
+        <div class="rain-day-top"><span>${rainDayLabel(row.date)}</span><small>${dayBand.label}</small></div>
+        <strong>${p !== null ? Math.round(p) : "—"}%</strong>
+        <div class="rain-day-track" aria-hidden="true"><i style="width:${safeP}%"></i></div>
+        <p>${condition}</p>
+        <b>${rainText}</b>
+      </article>`;
+  }).join("");
+}
+
 function render(data, cached = false) {
   const {current:c, consensus:n, risk, models, hourly} = data;
   renderRainNext2(data.rainNext2 || []);
+  renderRainNext5(data.rainNext5Days || []);
   $("updated").textContent = `${cached ? "Dados salvos • " : "Atualizado "}${dateTimeLabel(new Date(data.generatedAt))}`;
   $("riskLevel").textContent = risk.level;
   $("riskLabel").textContent = risk.label;
@@ -366,8 +440,12 @@ function clearMainMetrics() {
   $("updated").textContent = "Atualizando modelos…";
   if ($("rain2hSummary")) $("rain2hSummary").textContent = "calculando…";
   if ($("rain2hGrid")) $("rain2hGrid").innerHTML = `
-    <article class="rain-hour-card is-loading"><span>Próxima hora</span><strong>—%</strong><small>carregando</small></article>
-    <article class="rain-hour-card is-loading"><span>Hora seguinte</span><strong>—%</strong><small>carregando</small></article>`;
+    <article class="rain-hour-card is-loading"><span>1ª janela</span><strong>—%</strong><small>carregando</small></article>
+    <article class="rain-hour-card is-loading"><span>2ª janela</span><strong>—%</strong><small>carregando</small></article>`;
+  if ($("rain5dSummary")) $("rain5dSummary").textContent = "calculando…";
+  if ($("rain5dGrid")) $("rain5dGrid").innerHTML = Array.from({length:5}, () =>
+    '<article class="rain-day-card is-loading"><span>—</span><strong>—%</strong><small>carregando</small></article>'
+  ).join("");
   $("riskLabel").textContent = "Analisando";
   $("riskSummary").textContent = `Calculando o risco para ${currentCity.name}.`;
   $("riskReasons").innerHTML = "";
