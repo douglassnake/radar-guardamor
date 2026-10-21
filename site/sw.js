@@ -1,4 +1,4 @@
-const CACHE = 'radar-gm-v20-store-release';
+const CACHE = 'radar-gm-v21-rain-5d';
 const SHELL = [
   './', './index.html', './styles.css', './v4.css', './visual.css', './theme-v17.css', './native.css', './native.js', './app.js', './cptec.js', './v4.js', './v5.js', './visual.js', './data/guardamor/v5.json', './privacy.html', './support.html', './manifest.webmanifest',
   './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png'
