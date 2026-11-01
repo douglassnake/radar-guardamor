@@ -1,6 +1,6 @@
 {
   "version": "5.1",
-  "generated_at": "2026-11-01T16:02:36.924401+00:00",
+  "generated_at": "2026-11-01T20:29:14.889119+00:00",
   "city": {
     "id": "guarda-mor-mg",
     "name": "Guarda-Mor",
@@ -113,18 +113,18 @@
     },
     "ICON": {
       "all": {
-        "n": 253,
-        "rain_n": 253,
-        "gust_n": 253,
-        "mae_rain": 0.2671936758893281,
-        "rmse_rain": 0.7528076564361794,
-        "mae_gust": 4.728458498023715,
-        "rmse_gust": 6.173893141425363,
-        "events_n": 253,
+        "n": 254,
+        "rain_n": 254,
+        "gust_n": 254,
+        "mae_rain": 0.2661417322834646,
+        "rmse_rain": 0.7513242901546429,
+        "mae_gust": 4.736614173228346,
+        "rmse_gust": 6.1764825756958155,
+        "events_n": 254,
         "pod": 0.11764705882352941,
         "far": 0.875,
         "csi": 0.06451612903225806,
-        "brier": 0.11462450592885376
+        "brier": 0.1141732283464567
       },
       "official": {
         "n": 0,
@@ -163,28 +163,68 @@
     }
   },
   "counts": {
-    "queue": 2,
-    "verifications": 759,
+    "queue": 7,
+    "verifications": 760,
     "official_rain": 0
   },
   "latest_forecasts": {
+    "ECMWF": {
+      "targets": [
+        {
+          "lead": 3,
+          "target": "2026-11-01T20:00",
+          "rain": 0.0,
+          "gust": 5.8,
+          "cape": 1280.0,
+          "dew": 20.9
+        },
+        {
+          "lead": 6,
+          "target": "2026-11-01T23:00",
+          "rain": 0.0,
+          "gust": 1.1,
+          "cape": 1160.0,
+          "dew": 20.1
+        }
+      ]
+    },
+    "GFS": {
+      "targets": [
+        {
+          "lead": 3,
+          "target": "2026-11-01T20:00",
+          "rain": 0.0,
+          "gust": 16.6,
+          "cape": 1330.0,
+          "dew": 20.4
+        },
+        {
+          "lead": 6,
+          "target": "2026-11-01T23:00",
+          "rain": 0.0,
+          "gust": 21.6,
+          "cape": 410.0,
+          "dew": 19.6
+        }
+      ]
+    },
     "ICON": {
       "targets": [
         {
           "lead": 3,
-          "target": "2026-11-01T16:00",
+          "target": "2026-11-01T20:00",
           "rain": 0.0,
-          "gust": 16.2,
-          "cape": 540.0,
-          "dew": 19.1
+          "gust": 8.3,
+          "cape": 630.0,
+          "dew": 20.5
         },
         {
           "lead": 6,
-          "target": "2026-11-01T19:00",
+          "target": "2026-11-01T23:00",
           "rain": 0.0,
-          "gust": 10.1,
-          "cape": 540.0,
-          "dew": 20.4
+          "gust": 6.5,
+          "cape": 610.0,
+          "dew": 19.9
         }
       ]
     }
