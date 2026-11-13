@@ -1,6 +1,6 @@
 {
   "version": "5.1",
-  "generated_at": "2026-11-13T00:18:50.021164+00:00",
+  "generated_at": "2026-11-13T07:54:30.770986+00:00",
   "city": {
     "id": "guarda-mor-mg",
     "name": "Guarda-Mor",
@@ -53,18 +53,18 @@
   "metrics": {
     "ECMWF": {
       "all": {
-        "n": 331,
-        "rain_n": 331,
-        "gust_n": 331,
-        "mae_rain": 0.2,
-        "rmse_rain": 0.5789353704361083,
-        "mae_gust": 4.981268882175226,
-        "rmse_gust": 7.110287853067153,
-        "events_n": 331,
+        "n": 333,
+        "rain_n": 333,
+        "gust_n": 333,
+        "mae_rain": 0.1987987987987988,
+        "rmse_rain": 0.5771942074840609,
+        "mae_gust": 4.9987987987987985,
+        "rmse_gust": 7.117334926533699,
+        "events_n": 333,
         "pod": 0.36363636363636365,
         "far": 0.5,
         "csi": 0.26666666666666666,
-        "brier": 0.06646525679758308
+        "brier": 0.06606606606606606
       },
       "official": {
         "n": 0,
@@ -83,18 +83,18 @@
     },
     "GFS": {
       "all": {
-        "n": 331,
-        "rain_n": 331,
-        "gust_n": 331,
-        "mae_rain": 0.24441087613293053,
-        "rmse_rain": 0.9445822619268414,
-        "mae_gust": 9.185498489425981,
-        "rmse_gust": 11.85533138192377,
-        "events_n": 331,
+        "n": 333,
+        "rain_n": 333,
+        "gust_n": 333,
+        "mae_rain": 0.24294294294294297,
+        "rmse_rain": 0.941741406585097,
+        "mae_gust": 9.183183183183184,
+        "rmse_gust": 11.858960955958787,
+        "events_n": 333,
         "pod": 0.09090909090909091,
         "far": 0.8,
         "csi": 0.06666666666666667,
-        "brier": 0.08459214501510574
+        "brier": 0.08408408408408409
       },
       "official": {
         "n": 0,
@@ -113,18 +113,18 @@
     },
     "ICON": {
       "all": {
-        "n": 333,
-        "rain_n": 333,
-        "gust_n": 333,
-        "mae_rain": 0.24924924924924924,
-        "rmse_rain": 0.7032741958827969,
-        "mae_gust": 4.988888888888889,
-        "rmse_gust": 6.76733232424615,
-        "events_n": 333,
+        "n": 335,
+        "rain_n": 335,
+        "gust_n": 335,
+        "mae_rain": 0.24776119402985075,
+        "rmse_rain": 0.7011717272143652,
+        "mae_gust": 4.985970149253731,
+        "rmse_gust": 6.757185230464381,
+        "events_n": 335,
         "pod": 0.18181818181818182,
         "far": 0.7894736842105263,
         "csi": 0.10810810810810811,
-        "brier": 0.0990990990990991
+        "brier": 0.09850746268656717
       },
       "official": {
         "n": 0,
@@ -164,10 +164,71 @@
   },
   "counts": {
     "queue": 6,
-    "verifications": 995,
+    "verifications": 1001,
     "official_rain": 0
   },
-  "latest_forecasts": {},
+  "latest_forecasts": {
+    "ECMWF": {
+      "targets": [
+        {
+          "lead": 3,
+          "target": "2026-11-13T07:00",
+          "rain": 0.0,
+          "gust": 4.3,
+          "cape": 790.0,
+          "dew": 19.7
+        },
+        {
+          "lead": 6,
+          "target": "2026-11-13T10:00",
+          "rain": 0.1,
+          "gust": 14.8,
+          "cape": 1440.0,
+          "dew": 19.7
+        }
+      ]
+    },
+    "GFS": {
+      "targets": [
+        {
+          "lead": 3,
+          "target": "2026-11-13T07:00",
+          "rain": 0.0,
+          "gust": 2.2,
+          "cape": 200.0,
+          "dew": 18.0
+        },
+        {
+          "lead": 6,
+          "target": "2026-11-13T10:00",
+          "rain": 0.0,
+          "gust": 6.8,
+          "cape": 780.0,
+          "dew": 18.2
+        }
+      ]
+    },
+    "ICON": {
+      "targets": [
+        {
+          "lead": 3,
+          "target": "2026-11-13T07:00",
+          "rain": 0.0,
+          "gust": 7.9,
+          "cape": 270.0,
+          "dew": 20.7
+        },
+        {
+          "lead": 6,
+          "target": "2026-11-13T10:00",
+          "rain": 0.0,
+          "gust": 14.4,
+          "cape": 710.0,
+          "dew": 20.2
+        }
+      ]
+    }
+  },
   "sources": {
     "idf": "SGB/CPRM Atlas Pluviométrico – estação Guarda-Mor 01747005",
     "official_rain_candidate": "CEMADEN PED",
