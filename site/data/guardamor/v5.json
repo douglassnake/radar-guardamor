@@ -1,6 +1,6 @@
 {
   "version": "5.1",
-  "generated_at": "2026-11-14T10:20:48.991833+00:00",
+  "generated_at": "2026-11-14T17:05:20.560370+00:00",
   "city": {
     "id": "guarda-mor-mg",
     "name": "Guarda-Mor",
@@ -167,68 +167,7 @@
     "verifications": 1019,
     "official_rain": 0
   },
-  "latest_forecasts": {
-    "ECMWF": {
-      "targets": [
-        {
-          "lead": 3,
-          "target": "2026-11-14T10:00",
-          "rain": 0.0,
-          "gust": 20.5,
-          "cape": 1460.0,
-          "dew": 20.0
-        },
-        {
-          "lead": 6,
-          "target": "2026-11-14T13:00",
-          "rain": 0.0,
-          "gust": 20.9,
-          "cape": 1740.0,
-          "dew": 19.0
-        }
-      ]
-    },
-    "GFS": {
-      "targets": [
-        {
-          "lead": 3,
-          "target": "2026-11-14T10:00",
-          "rain": 0.0,
-          "gust": 7.2,
-          "cape": 790.0,
-          "dew": 17.3
-        },
-        {
-          "lead": 6,
-          "target": "2026-11-14T13:00",
-          "rain": 0.0,
-          "gust": 11.5,
-          "cape": 540.0,
-          "dew": 15.6
-        }
-      ]
-    },
-    "ICON": {
-      "targets": [
-        {
-          "lead": 3,
-          "target": "2026-11-14T10:00",
-          "rain": 0.0,
-          "gust": 14.0,
-          "cape": 670.0,
-          "dew": 20.5
-        },
-        {
-          "lead": 6,
-          "target": "2026-11-14T13:00",
-          "rain": 0.0,
-          "gust": 15.1,
-          "cape": 910.0,
-          "dew": 19.7
-        }
-      ]
-    }
-  },
+  "latest_forecasts": {},
   "sources": {
     "idf": "SGB/CPRM Atlas Pluviométrico – estação Guarda-Mor 01747005",
     "official_rain_candidate": "CEMADEN PED",
