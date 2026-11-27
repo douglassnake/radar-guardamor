@@ -1,26 +1,70 @@
 {
   "queue": [
     {
-      "key": "ICON|2026-11-26T20:00|3",
-      "model": "ICON",
-      "issued": "2026-11-26T20:00",
+      "key": "ECMWF|2026-11-27T05:00|3",
+      "model": "ECMWF",
+      "issued": "2026-11-27T05:00",
       "lead": 3,
-      "target": "2026-11-26T23:00",
-      "rain": 0.0,
-      "gust": 8.3,
-      "cape": 990.0,
-      "dew": 23.1
+      "target": "2026-11-27T08:00",
+      "rain": 0.1,
+      "gust": 19.1,
+      "cape": 1360.0,
+      "dew": 22.2
     },
     {
-      "key": "ICON|2026-11-26T20:00|6",
-      "model": "ICON",
-      "issued": "2026-11-26T20:00",
+      "key": "ECMWF|2026-11-27T05:00|6",
+      "model": "ECMWF",
+      "issued": "2026-11-27T05:00",
       "lead": 6,
-      "target": "2026-11-27T02:00",
-      "rain": 0.4,
+      "target": "2026-11-27T11:00",
+      "rain": 0.1,
+      "gust": 27.0,
+      "cape": 2120.0,
+      "dew": 22.6
+    },
+    {
+      "key": "GFS|2026-11-27T05:00|3",
+      "model": "GFS",
+      "issued": "2026-11-27T05:00",
+      "lead": 3,
+      "target": "2026-11-27T08:00",
+      "rain": 0.0,
       "gust": 8.6,
+      "cape": 70.0,
+      "dew": 20.7
+    },
+    {
+      "key": "GFS|2026-11-27T05:00|6",
+      "model": "GFS",
+      "issued": "2026-11-27T05:00",
+      "lead": 6,
+      "target": "2026-11-27T11:00",
+      "rain": 0.0,
+      "gust": 13.7,
+      "cape": 710.0,
+      "dew": 21.5
+    },
+    {
+      "key": "ICON|2026-11-27T05:00|3",
+      "model": "ICON",
+      "issued": "2026-11-27T05:00",
+      "lead": 3,
+      "target": "2026-11-27T08:00",
+      "rain": 0.0,
+      "gust": 22.0,
+      "cape": 100.0,
+      "dew": 21.3
+    },
+    {
+      "key": "ICON|2026-11-27T05:00|6",
+      "model": "ICON",
+      "issued": "2026-11-27T05:00",
+      "lead": 6,
+      "target": "2026-11-27T11:00",
+      "rain": 0.2,
+      "gust": 24.5,
       "cape": 440.0,
-      "dew": 22.0
+      "dew": 22.2
     }
   ],
   "verifications": [
@@ -26841,6 +26885,50 @@
       "gust_error": -4.299999999999999,
       "event_pred": false,
       "event_obs": true
+    },
+    {
+      "key": "ICON|2026-11-26T20:00|3",
+      "model": "ICON",
+      "issued": "2026-11-26T20:00",
+      "lead": 3,
+      "target": "2026-11-26T23:00",
+      "rain": 0.0,
+      "gust": 8.3,
+      "cape": 990.0,
+      "dew": 23.1,
+      "verified": "2026-11-27T05:23",
+      "obs_rain": 0.0,
+      "obs_gust": 6.1,
+      "rain_official": false,
+      "rain_source": "Open-Meteo referência assimilada/modelada",
+      "gust_official": false,
+      "gust_source": "Open-Meteo referência assimilada/modelada",
+      "rain_error": 0.0,
+      "gust_error": 2.200000000000001,
+      "event_pred": false,
+      "event_obs": false
+    },
+    {
+      "key": "ICON|2026-11-26T20:00|6",
+      "model": "ICON",
+      "issued": "2026-11-26T20:00",
+      "lead": 6,
+      "target": "2026-11-27T02:00",
+      "rain": 0.4,
+      "gust": 8.6,
+      "cape": 440.0,
+      "dew": 22.0,
+      "verified": "2026-11-27T05:23",
+      "obs_rain": 0.0,
+      "obs_gust": 12.6,
+      "rain_official": false,
+      "rain_source": "Open-Meteo referência assimilada/modelada",
+      "gust_official": false,
+      "gust_source": "Open-Meteo referência assimilada/modelada",
+      "rain_error": 0.4,
+      "gust_error": -4.0,
+      "event_pred": false,
+      "event_obs": false
     }
   ]
 }
